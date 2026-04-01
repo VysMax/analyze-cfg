@@ -1,0 +1,33 @@
+package models
+
+type Config struct {
+	Server   `json:"server" yaml:"server"`
+	Database `json:"database" yaml:"database"`
+	Storage  `json:"storage" yaml:"storage"`
+	Log      `json:"log" yaml:"log"`
+}
+
+type Server struct {
+	Host      string `json:"host" yaml:"host"`
+	TlsVerify bool   `json:"tls_verify" yaml:"tls_verify"`
+}
+
+type Database struct {
+	Password string `json:"password" yaml:"password"`
+}
+
+type Storage struct {
+	Permissions     string `json:"permissions" yaml:"permissions"`
+	DigestAlgorithm string `json:"digest_algorithm" yaml:"digest_algorithm"`
+}
+
+type Log struct {
+	Output string `json:"output" yaml:"output"`
+	Level  string `json:"level" yaml:"level"`
+}
+
+type Problem struct {
+	Path        string
+	Description string
+	Severity    string
+}

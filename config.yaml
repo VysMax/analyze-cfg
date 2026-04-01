@@ -1,0 +1,14 @@
+server:
+  host: "0.0.0.0"
+  tls_verify: false
+
+database:
+  password: "password"
+
+storage:
+  permissions: 0777
+  digest_algorithm: "md5"
+
+log:
+  output: "stdout"
+  level: "debug"
