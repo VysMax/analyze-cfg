@@ -14,6 +14,9 @@ import (
 )
 
 func main() {
+	isSilent := flag.Bool("s", false, "не выходить с ошибкой при наличии проблем")
+	flag.BoolVar(isSilent, "silent", false, "не выходить с ошибкой при наличии проблем")
+
 	flag.Parse()
 	cfgPath := flag.Arg(0)
 
@@ -32,11 +35,11 @@ func main() {
 	case format == ".yaml" || format == ".yml":
 		err = yaml.Unmarshal(data, &cfg)
 	default:
-		fmt.Fprintf(os.Stderr, "format %s not supported\n", format)
+		fmt.Fprintf(os.Stderr, "неподдерживаемый формат: %s\n", format)
 		os.Exit(1)
 	}
 	if err != nil {
-		fmt.Fprintf(os.Stderr, "error parsing config file")
+		fmt.Fprintf(os.Stderr, "ошибка извлечения данных из файла конфигурации")
 		os.Exit(1)
 	}
 
@@ -58,6 +61,10 @@ func main() {
 
 	for i, problem := range problems {
 		fmt.Printf("%d. %s: %s\n\n", i+1, problem.Severity, problem.Description)
+	}
+
+	if *isSilent {
+		os.Exit(0)
 	}
 
 	os.Exit(1)
