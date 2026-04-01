@@ -17,7 +17,7 @@ func AnalyseCfg(cfg *models.Config) []models.Problem {
 		})
 	}
 
-	if cfg.DigestAlgorithm == "md5" {
+	if cfg.DigestAlgorithm == "MD5" {
 		problems = append(problems, models.Problem{
 			Path:        "add later",
 			Description: fmt.Sprintf("слишком слабый алгоритм - %s. Замените его на более безопасный.", cfg.DigestAlgorithm),

@@ -7,7 +7,7 @@ database:
 
 storage:
   permissions: 0777
-  digest_algorithm: "md5"
+  digest_algorithm: "MD5"
 
 log:
   output: "stdout"
