@@ -15,8 +15,7 @@ func AnalyseFile(cfg *models.Config) (string, error) {
 
 	file, err := os.Open(cfg.ConfigPath)
 	if err != nil {
-		fmt.Fprintf(os.Stderr, "ошибка открытия файла %s: %v\n", cfg.ConfigPath, err)
-		os.Exit(1)
+		return "", fmt.Errorf("ошибка открытия файла %s: %v\n", cfg.ConfigPath, err)
 	}
 	defer file.Close()
 
@@ -24,8 +23,7 @@ func AnalyseFile(cfg *models.Config) (string, error) {
 	r = file
 	err = SetReader(&r)
 	if err != nil {
-		fmt.Fprintf(os.Stderr, "ошибка чтения из стандартного ввода: %v\n", err)
-		os.Exit(1)
+		return "", fmt.Errorf("ошибка чтения из стандартного ввода: %v\n", err)
 	}
 
 	format := path.Ext(cfg.ConfigPath)

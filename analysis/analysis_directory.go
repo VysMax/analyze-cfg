@@ -1,6 +1,7 @@
 package analysis
 
 import (
+	"fmt"
 	"io/fs"
 	"path/filepath"
 	"strings"
@@ -15,7 +16,8 @@ func AnalyseDirectory(root string, cfg *models.Config) (string, error) {
 		".yml":  {},
 	}
 
-	messages := make([]string, 0)
+	messages := make([]string, 1)
+	messages[0] = fmt.Sprintf("Анализ папки %s:\n", root)
 
 	err := filepath.Walk(root, func(path string, info fs.FileInfo, err error) error {
 
@@ -40,6 +42,10 @@ func AnalyseDirectory(root string, cfg *models.Config) (string, error) {
 
 		return nil
 	})
+
+	if len(messages) == 1 {
+		return fmt.Sprintf("Папка %s не содержит файлов конфигурации\n", root), nil
+	}
 
 	return strings.Join(messages, "\n"), err
 }

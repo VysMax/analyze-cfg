@@ -3,22 +3,37 @@ package main
 import (
 	"flag"
 	"fmt"
-	"io"
+	"log"
+	"net/http"
 	"os"
 
 	"github.com/VysMax/analyze-cfg/analysis"
+	"github.com/VysMax/analyze-cfg/handlers"
 	"github.com/VysMax/analyze-cfg/models"
 )
 
 func main() {
+	apiMode := flag.Bool("api", false, "Запуск в качестве REST API")
+
 	isSilent := flag.Bool("s", false, "не выходить с ошибкой при наличии проблем")
 	flag.BoolVar(isSilent, "silent", false, "не выходить с ошибкой при наличии проблем")
 	isStdin := flag.Bool("stdin", false, "прочитать конфигурацию из стандартного потока ввода вместо файла")
 
 	flag.Parse()
 
+	if *apiMode {
+		http.HandleFunc("/analyse", handlers.AnalyseHandler)
+
+		port := "8080"
+
+		log.Printf("Запуск сервера на порту %s", port)
+
+		if err := http.ListenAndServe(":"+port, nil); err != nil {
+			log.Fatalf("ошибка запуска сервера: %v", err)
+		}
+	}
+
 	var (
-		r       io.Reader
 		cfg     models.Config
 		message string
 		err     error
@@ -26,14 +41,8 @@ func main() {
 
 	switch *isStdin {
 	case true:
-		r = os.Stdin
-		err = analysis.SetReader(&r)
-		if err != nil {
-			fmt.Fprintf(os.Stderr, "ошибка чтения из стандартного ввода: %v\n", err)
-			os.Exit(1)
-		}
 
-		message, err = analysis.AnalysisStdin(r, &cfg)
+		message, err = analysis.AnalysisStdin(os.Stdin, &cfg)
 		if err != nil {
 			fmt.Fprintf(os.Stderr, "ошибка десериализации из стандартного ввода: %v\n", err)
 			os.Exit(1)
@@ -43,6 +52,7 @@ func main() {
 		info, err := os.Stat(flag.Arg(0))
 		if err != nil {
 			fmt.Fprintf(os.Stderr, "ошибка получения информации о файле %v\n", err)
+			os.Exit(1)
 		}
 
 		if info.IsDir() {

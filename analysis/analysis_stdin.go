@@ -5,13 +5,21 @@ import (
 	"encoding/json"
 	"fmt"
 	"io"
+	"os"
 	"strings"
 
 	"github.com/VysMax/analyze-cfg/models"
 	"gopkg.in/yaml.v3"
 )
 
-func AnalysisStdin(r io.Reader, cfg *models.Config) (string, error) {
+func AnalysisStdin(input *os.File, cfg *models.Config) (string, error) {
+	var r io.Reader
+	r = input
+	err := SetReader(&r)
+	if err != nil {
+		return "", fmt.Errorf("ошибка чтения из стандартного ввода: %v\n", err)
+	}
+
 	data, err := io.ReadAll(r)
 	if err != nil {
 		return "", fmt.Errorf("ошибка чтения данных из стандартного ввода: %w", err)

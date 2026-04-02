@@ -8,10 +8,7 @@ import (
 func MessageBuilder(filepath string, problems Problems) string {
 	var sb strings.Builder
 
-	switch filepath {
-	case "":
-		sb.WriteString("Конфигурация из стандартного ввода:\n\n")
-	default:
+	if filepath != "" {
 		sb.WriteString(fmt.Sprintf("Файл %s:\n\n", filepath))
 	}
 
