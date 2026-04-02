@@ -12,21 +12,21 @@ import (
 	"gopkg.in/yaml.v3"
 )
 
-func AnalysisStdin(input *os.File, cfg *models.Config) (string, error) {
+func AnalysisStdin(input *os.File, cfg *models.Config) (Problems, error) {
 	var r io.Reader
 	r = input
 	err := SetReader(&r)
 	if err != nil {
-		return "", fmt.Errorf("ошибка чтения из стандартного ввода: %v\n", err)
+		return nil, fmt.Errorf("ошибка чтения из стандартного ввода: %v\n", err)
 	}
 
 	data, err := io.ReadAll(r)
 	if err != nil {
-		return "", fmt.Errorf("ошибка чтения данных из стандартного ввода: %w", err)
+		return nil, fmt.Errorf("ошибка чтения данных из стандартного ввода: %w", err)
 	}
 
 	if len(data) == 0 {
-		return "", fmt.Errorf("отсутствуют данные в стандартном вводе")
+		return nil, fmt.Errorf("отсутствуют данные в стандартном вводе")
 	}
 
 	var (
@@ -51,17 +51,15 @@ func AnalysisStdin(input *os.File, cfg *models.Config) (string, error) {
 	}
 
 	if !isParsed {
-		return "", fmt.Errorf("%s", eachAttemptErrInfo)
+		return nil, fmt.Errorf("%s", eachAttemptErrInfo)
 	}
 
 	var problems Problems
 	if err = problems.AnalyseCfg(cfg); err != nil {
-		return "", fmt.Errorf("ошибка проверки конфигурации: %v\n", err)
+		return nil, fmt.Errorf("ошибка проверки конфигурации: %v\n", err)
 	}
 
-	message := MessageBuilder("", problems)
-
-	return message, nil
+	return problems, nil
 }
 
 func SetReader(r *io.Reader) error {

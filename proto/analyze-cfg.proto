@@ -1,0 +1,17 @@
+syntax = "proto3";
+
+package analyze-cfg;
+
+option go_package = "github.com/VysMax/analyze-cfg/proto";
+
+service CfgAnalyzer {
+    rpc Analyze(AnalyzeRequest) returns (AnalyzeResponse);
+}
+
+message AnalyzeRequest {
+    Config config = 1;
+}
+
+message AnalyzeResponse {
+    string result = 1;
+}

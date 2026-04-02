@@ -8,6 +8,7 @@ import (
 	"net/http"
 	"os"
 	"os/signal"
+	"strings"
 	"syscall"
 	"time"
 
@@ -64,18 +65,21 @@ func main() {
 	}
 
 	var (
-		cfg     models.Config
-		message string
+		problems analysis.Problems
+		cfg      models.Config
+		message  string
 	)
 
 	switch *isStdin {
 	case true:
 
-		message, err = analysis.AnalysisStdin(os.Stdin, &cfg)
+		problems, err = analysis.AnalysisStdin(os.Stdin, &cfg)
 		if err != nil {
 			fmt.Fprintf(os.Stderr, "ошибка десериализации из стандартного ввода: %v\n", err)
 			os.Exit(1)
 		}
+
+		message = analysis.MessageBuilder("", problems)
 
 	case false:
 		info, err := os.Stat(flag.Arg(0))
@@ -85,15 +89,31 @@ func main() {
 		}
 
 		if info.IsDir() {
-			message, err = analysis.AnalyseDirectory(flag.Arg(0), &cfg)
+			multFileProblems, err := analysis.AnalyseDirectory(flag.Arg(0), &cfg)
+			if err != nil {
+				fmt.Fprintf(os.Stderr, "ошибка анализа папки %v\n", err)
+				os.Exit(1)
+			}
+
+			messages := make([]string, 1)
+			messages[0] = fmt.Sprintf("Анализ папки %s:\n", flag.Arg(0))
+
+			for _, problems = range multFileProblems {
+				message = analysis.MessageBuilder(problems[0].Filename, problems)
+				messages = append(messages, message)
+			}
+
+			message = strings.Join(messages, "\n")
 		} else {
 			cfg.ConfigPath = flag.Arg(0)
 
-			message, err = analysis.AnalyseFile(&cfg)
+			problems, err = analysis.AnalyseFile(&cfg)
 			if err != nil {
 				fmt.Fprintf(os.Stderr, "ошибка анализа файла: %v\n", err)
 				os.Exit(1)
 			}
+
+			message = analysis.MessageBuilder(cfg.ConfigPath, problems)
 		}
 	}
 

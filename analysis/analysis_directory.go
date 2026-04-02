@@ -1,23 +1,23 @@
 package analysis
 
 import (
-	"fmt"
 	"io/fs"
 	"path/filepath"
-	"strings"
 
 	"github.com/VysMax/analyze-cfg/models"
 )
 
-func AnalyseDirectory(root string, cfg *models.Config) (string, error) {
+func AnalyseDirectory(root string, cfg *models.Config) ([]Problems, error) {
 	var allowedExts = map[string]struct{}{
 		".json": {},
 		".yaml": {},
 		".yml":  {},
 	}
 
-	messages := make([]string, 1)
-	messages[0] = fmt.Sprintf("Анализ папки %s:\n", root)
+	// messages := make([]string, 1)
+	// messages[0] = fmt.Sprintf("Анализ папки %s:\n", root)
+
+	var multFileProblems []Problems
 
 	err := filepath.Walk(root, func(path string, info fs.FileInfo, err error) error {
 
@@ -33,19 +33,20 @@ func AnalyseDirectory(root string, cfg *models.Config) (string, error) {
 
 		cfg.ConfigPath = path
 
-		message, err := AnalyseFile(cfg)
+		problems, err := AnalyseFile(cfg)
 		if err != nil {
 			return err
 		}
 
-		messages = append(messages, message)
+		multFileProblems = append(multFileProblems, problems)
 
 		return nil
 	})
 
-	if len(messages) == 1 {
-		return fmt.Sprintf("Папка %s не содержит файлов конфигурации\n", root), nil
-	}
+	return multFileProblems, err
+	// if len(messages) == 1 {
+	// 	return fmt.Sprintf("Папка %s не содержит файлов конфигурации\n", root), nil
+	// }
 
-	return strings.Join(messages, "\n"), err
+	// return strings.Join(messages, "\n"), err
 }

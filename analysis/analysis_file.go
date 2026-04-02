@@ -11,11 +11,11 @@ import (
 	"gopkg.in/yaml.v3"
 )
 
-func AnalyseFile(cfg *models.Config) (string, error) {
+func AnalyseFile(cfg *models.Config) (Problems, error) {
 
 	file, err := os.Open(cfg.ConfigPath)
 	if err != nil {
-		return "", fmt.Errorf("ошибка открытия файла %s: %v\n", cfg.ConfigPath, err)
+		return nil, fmt.Errorf("ошибка открытия файла %s: %v\n", cfg.ConfigPath, err)
 	}
 	defer file.Close()
 
@@ -23,7 +23,7 @@ func AnalyseFile(cfg *models.Config) (string, error) {
 	r = file
 	err = SetReader(&r)
 	if err != nil {
-		return "", fmt.Errorf("ошибка чтения из стандартного ввода: %v\n", err)
+		return nil, fmt.Errorf("ошибка чтения из стандартного ввода: %v\n", err)
 	}
 
 	format := path.Ext(cfg.ConfigPath)
@@ -34,19 +34,17 @@ func AnalyseFile(cfg *models.Config) (string, error) {
 	case ".yaml", ".yml":
 		err = yaml.NewDecoder(r).Decode(&cfg)
 	default:
-		return "", fmt.Errorf("неподдерживаемый формат:%s\n", format)
+		return nil, fmt.Errorf("неподдерживаемый формат:%s\n", format)
 	}
 
 	if err != nil && err != io.EOF {
-		return "", fmt.Errorf("ошибка парсинга конфигурации: %v\n", err)
+		return nil, fmt.Errorf("ошибка парсинга конфигурации: %v\n", err)
 	}
 
 	var problems Problems
 	if err = problems.AnalyseCfg(cfg); err != nil {
-		return "", fmt.Errorf("ошибка проверки конфигурации: %v\n", err)
+		return nil, fmt.Errorf("ошибка проверки конфигурации: %v\n", err)
 	}
 
-	message := MessageBuilder(cfg.ConfigPath, problems)
-
-	return message, nil
+	return problems, nil
 }

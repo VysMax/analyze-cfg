@@ -29,9 +29,9 @@ type Log struct {
 }
 
 type Problem struct {
-	Filename       string
-	Path           string
-	Description    string
-	Recommendation string
-	Severity       string
+	Filename       string `json:"filename,omitempty"`
+	Path           string `json:"path"`
+	Description    string `json:"description"`
+	Recommendation string `json:"recommendation"`
+	Severity       string `json:"severity"`
 }
