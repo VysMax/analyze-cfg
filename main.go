@@ -43,11 +43,11 @@ func main() {
 		}
 
 	case false:
-		cfgPath := flag.Arg(0)
+		cfg.ConfigPath = flag.Arg(0)
 
-		file, err := os.Open(cfgPath)
+		file, err := os.Open(cfg.ConfigPath)
 		if err != nil {
-			fmt.Fprintf(os.Stderr, "ошибка открытия файла %s: %v\n", cfgPath, err)
+			fmt.Fprintf(os.Stderr, "ошибка открытия файла %s: %v\n", cfg.ConfigPath, err)
 			os.Exit(1)
 		}
 		defer file.Close()
@@ -59,7 +59,7 @@ func main() {
 			os.Exit(1)
 		}
 
-		format := path.Ext(cfgPath)
+		format := path.Ext(cfg.ConfigPath)
 
 		switch format {
 		case ".json":
@@ -76,7 +76,11 @@ func main() {
 		os.Exit(1)
 	}
 
-	problems := analysis.AnalyseCfg(&cfg)
+	var problems analysis.Problems
+	if err = problems.AnalyseCfg(&cfg); err != nil {
+		fmt.Fprintf(os.Stderr, "ошибка проверки конфигурации: %v\n", err)
+		os.Exit(1)
+	}
 
 	if len(problems) == 0 {
 		fmt.Println("No problems")
@@ -93,7 +97,7 @@ func main() {
 	}
 
 	for i, problem := range problems {
-		fmt.Printf("%d. %s: %s\n\n", i+1, problem.Severity, problem.Description)
+		fmt.Printf("%d. %s: %s %s\n\n", i+1, problem.Severity, problem.Description, problem.Recommendation)
 	}
 
 	if *isSilent {

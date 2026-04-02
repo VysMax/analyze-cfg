@@ -1,4 +1,6 @@
 {
+    "version": "0.1",
+
     "server": {
         "host": "0.0.0.0",
         "tls_verify": false
@@ -9,6 +11,7 @@
     },
 
     "storage": {
+        "path": "storage/storage.txt",
         "permissions": "0777",
         "digest_algorithm": "MD5"
     },

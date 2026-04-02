@@ -1,11 +1,14 @@
+version: 2.2
+
 server:
-  host: "0.0.0.0"
+  host: "127.0.0.0"
   tls_verify: false
 
 database:
   password: "password"
 
 storage:
+  path: "storage/storage.txt"
   permissions: 0777
   digest_algorithm: "MD5"
 
