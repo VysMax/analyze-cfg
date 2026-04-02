@@ -11,31 +11,49 @@ import (
 	"gopkg.in/yaml.v3"
 )
 
-func DecodeFromStdin(r io.Reader, cfg *models.Config) error {
+func AnalysisStdin(r io.Reader, cfg *models.Config) (string, error) {
 	data, err := io.ReadAll(r)
 	if err != nil {
-		return fmt.Errorf("ошибка чтения данных из стандартного ввода: %w", err)
+		return "", fmt.Errorf("ошибка чтения данных из стандартного ввода: %w", err)
 	}
 
 	if len(data) == 0 {
-		return fmt.Errorf("отсутствуют данные в стандартном вводе")
+		return "", fmt.Errorf("отсутствуют данные в стандартном вводе")
 	}
 
-	var eachAttemptErrInfo []string
+	var (
+		eachAttemptErrInfo []string
+		isParsed           bool
+	)
 
-	if err = json.NewDecoder(bytes.NewReader(data)).Decode(&cfg); err != nil {
+	err = json.NewDecoder(bytes.NewReader(data)).Decode(&cfg)
+	if err != nil {
 		eachAttemptErrInfo = append(eachAttemptErrInfo, fmt.Sprintf("json: %v", err))
 	} else {
-		return nil
+		isParsed = true
 	}
 
-	if err = yaml.NewDecoder(bytes.NewReader(data)).Decode(&cfg); err != nil {
-		eachAttemptErrInfo = append(eachAttemptErrInfo, fmt.Sprintf("; %v", err))
-	} else {
-		return nil
+	if !isParsed {
+		err = yaml.NewDecoder(bytes.NewReader(data)).Decode(&cfg)
+		if err != nil {
+			eachAttemptErrInfo = append(eachAttemptErrInfo, fmt.Sprintf("; %v", err))
+		} else {
+			isParsed = true
+		}
 	}
 
-	return fmt.Errorf("%s", eachAttemptErrInfo)
+	if !isParsed {
+		return "", fmt.Errorf("%s", eachAttemptErrInfo)
+	}
+
+	var problems Problems
+	if err = problems.AnalyseCfg(cfg); err != nil {
+		return "", fmt.Errorf("ошибка проверки конфигурации: %v\n", err)
+	}
+
+	message := MessageBuilder("", problems)
+
+	return message, nil
 }
 
 func SetReader(r *io.Reader) error {

@@ -1,0 +1,17 @@
+version: 2.2
+
+server:
+  host: "127.0.0.0"
+  tls_verify: true
+
+database:
+  password: ""
+
+storage:
+  path: "storage/storage.txt"
+  permissions: 0750
+  digest_algorithm: "sha256"
+
+log:
+  output: "stdout"
+  level: "info"

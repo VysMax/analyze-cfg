@@ -1,14 +1,10 @@
 package main
 
 import (
-	"encoding/json"
 	"flag"
 	"fmt"
 	"io"
 	"os"
-	"path"
-
-	"gopkg.in/yaml.v3"
 
 	"github.com/VysMax/analyze-cfg/analysis"
 	"github.com/VysMax/analyze-cfg/models"
@@ -22,9 +18,10 @@ func main() {
 	flag.Parse()
 
 	var (
-		r   io.Reader
-		cfg models.Config
-		err error
+		r       io.Reader
+		cfg     models.Config
+		message string
+		err     error
 	)
 
 	switch *isStdin {
@@ -36,69 +33,32 @@ func main() {
 			os.Exit(1)
 		}
 
-		err = analysis.DecodeFromStdin(r, &cfg)
+		message, err = analysis.AnalysisStdin(r, &cfg)
 		if err != nil {
 			fmt.Fprintf(os.Stderr, "ошибка десериализации из стандартного ввода: %v\n", err)
 			os.Exit(1)
 		}
 
 	case false:
-		cfg.ConfigPath = flag.Arg(0)
-
-		file, err := os.Open(cfg.ConfigPath)
+		info, err := os.Stat(flag.Arg(0))
 		if err != nil {
-			fmt.Fprintf(os.Stderr, "ошибка открытия файла %s: %v\n", cfg.ConfigPath, err)
-			os.Exit(1)
-		}
-		defer file.Close()
-
-		r = file
-		err = analysis.SetReader(&r)
-		if err != nil {
-			fmt.Fprintf(os.Stderr, "ошибка чтения из стандартного ввода: %v\n", err)
-			os.Exit(1)
+			fmt.Fprintf(os.Stderr, "ошибка получения информации о файле %v\n", err)
 		}
 
-		format := path.Ext(cfg.ConfigPath)
+		if info.IsDir() {
+			message, err = analysis.AnalyseDirectory(flag.Arg(0), &cfg)
+		} else {
+			cfg.ConfigPath = flag.Arg(0)
 
-		switch format {
-		case ".json":
-			err = json.NewDecoder(r).Decode(&cfg)
-		case ".yaml", ".yml":
-			err = yaml.NewDecoder(r).Decode(&cfg)
-		default:
-			fmt.Fprintf(os.Stderr, "неподдерживаемый формат: %s\n", format)
-			os.Exit(1)
+			message, err = analysis.AnalyseFile(&cfg)
+			if err != nil {
+				fmt.Fprintf(os.Stderr, "ошибка анализа файла: %v\n", err)
+				os.Exit(1)
+			}
 		}
 	}
-	if err != nil && err != io.EOF {
-		fmt.Fprintf(os.Stderr, "ошибка парсинга конфигурации: %v\n", err)
-		os.Exit(1)
-	}
 
-	var problems analysis.Problems
-	if err = problems.AnalyseCfg(&cfg); err != nil {
-		fmt.Fprintf(os.Stderr, "ошибка проверки конфигурации: %v\n", err)
-		os.Exit(1)
-	}
-
-	if len(problems) == 0 {
-		fmt.Println("No problems")
-		os.Exit(0)
-	}
-
-	switch {
-	case len(problems)%10 == 1 && len(problems)%100 != 11:
-		fmt.Printf("Обнаружена %d потенциально опасная настройка:\n\n", len(problems))
-	case len(problems)%10 >= 2 && len(problems)%10 <= 4 && (len(problems)%100)/10 != 1:
-		fmt.Printf("Обнаружено %d потенциально опасные настройки:\n\n", len(problems))
-	default:
-		fmt.Printf("Обнаружено %d потенциально опасных настроек:\n\n", len(problems))
-	}
-
-	for i, problem := range problems {
-		fmt.Printf("%d. %s: %s %s\n\n", i+1, problem.Severity, problem.Description, problem.Recommendation)
-	}
+	fmt.Println(message)
 
 	if *isSilent {
 		os.Exit(0)

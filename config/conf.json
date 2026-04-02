@@ -1,0 +1,23 @@
+{
+    "version": "0.1",
+
+    "server": {
+        "host": "0.0.0.0",
+        "tls_verify": false
+    },
+
+    "database": {
+        "password": ""
+    },
+
+    "storage": {
+        "path": "storage/storage.txt",
+        "permissions": "0750",
+        "digest_algorithm": "MD5"
+    },
+
+    "log": {
+        "output":"stdout",
+        "level": "debug"
+    }
+}

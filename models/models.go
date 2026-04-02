@@ -29,6 +29,7 @@ type Log struct {
 }
 
 type Problem struct {
+	Filename       string
 	Path           string
 	Description    string
 	Recommendation string
