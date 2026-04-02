@@ -1,42 +1,71 @@
 package main
 
 import (
+	"context"
 	"flag"
 	"fmt"
 	"log"
 	"net/http"
 	"os"
+	"os/signal"
+	"syscall"
+	"time"
 
 	"github.com/VysMax/analyze-cfg/analysis"
 	"github.com/VysMax/analyze-cfg/handlers"
 	"github.com/VysMax/analyze-cfg/models"
+	"github.com/joho/godotenv"
 )
 
 func main() {
 	apiMode := flag.Bool("api", false, "Запуск в качестве REST API")
-
 	isSilent := flag.Bool("s", false, "не выходить с ошибкой при наличии проблем")
 	flag.BoolVar(isSilent, "silent", false, "не выходить с ошибкой при наличии проблем")
 	isStdin := flag.Bool("stdin", false, "прочитать конфигурацию из стандартного потока ввода вместо файла")
 
 	flag.Parse()
 
+	err := godotenv.Load()
+	if err != nil {
+		log.Fatal(err)
+	}
+
 	if *apiMode {
 		http.HandleFunc("/analyse", handlers.AnalyseHandler)
 
-		port := "8080"
-
-		log.Printf("Запуск сервера на порту %s", port)
-
-		if err := http.ListenAndServe(":"+port, nil); err != nil {
-			log.Fatalf("ошибка запуска сервера: %v", err)
+		server := &http.Server{
+			Addr: os.Getenv("PORT"),
 		}
+
+		quit := make(chan os.Signal, 1)
+		signal.Notify(quit, os.Interrupt, syscall.SIGINT, syscall.SIGTERM)
+
+		go func() {
+			log.Printf("Запуск сервера на порту %s", server.Addr)
+			err := server.ListenAndServe()
+			if err != nil && err != http.ErrServerClosed {
+				log.Fatalf("ошибка запуска сервера: %v", err)
+			}
+		}()
+
+		<-quit
+		log.Println("Получен сигнал завершения, выключение...")
+
+		ctx, cancel := context.WithTimeout(context.Background(), 30*time.Second)
+		defer cancel()
+
+		if err := server.Shutdown(ctx); err != nil {
+			log.Printf("Ошибка завершения работы сервера: %v", err)
+		}
+
+		log.Println("Сервер завершил работу.")
+		return
+
 	}
 
 	var (
 		cfg     models.Config
 		message string
-		err     error
 	)
 
 	switch *isStdin {
