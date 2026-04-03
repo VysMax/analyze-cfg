@@ -1,4 +1,4 @@
-.PHONY: build run
+.PHONY: build
 
 APP_NAME = Analyse-Cfg
 
@@ -12,8 +12,3 @@ analyse-current-directory:
 
 grpc-gen:
 	protoc --go_out=./gen --go-grpc_out=./gen proto/analyze-cfg.proto
-
-help:
-	@echo "	build - Build the application"
-	@echo "	run - Run the application"
-	@echo "	lint - Run linter"
