@@ -8,39 +8,41 @@ import (
 	"github.com/VysMax/analyze-cfg/models"
 )
 
-type Problems []models.Problem
-
-func NewProblems(p Problems) *Problems {
-	p = make(Problems, 0)
-	return &p
+type Analyzer struct {
+	problems []models.Problem
 }
 
-func (p *Problems) AnalyzeCfg(cfg *models.Config) error {
-	p.CheckHost(cfg)
-	p.CheckPassword(cfg)
-	p.CheckTLS(cfg)
-	p.CheckLogLevel(cfg)
-	p.CheckAlgorithm(cfg)
-	p.CheckPermissionsToSet(cfg)
+func NewAnalyzer() *Analyzer {
+	p := make([]models.Problem, 0)
+	return &Analyzer{problems: p}
+}
+
+func (a *Analyzer) AnalyzeCfg(cfg *models.Config) ([]models.Problem, error) {
+	a.CheckHost(cfg)
+	a.CheckPassword(cfg)
+	a.CheckTLS(cfg)
+	a.CheckLogLevel(cfg)
+	a.CheckAlgorithm(cfg)
+	a.CheckPermissionsToSet(cfg)
 
 	if cfg.Storage.Path != "" {
-		if err := p.CheckCurrentPermissions(cfg); err != nil {
-			return err
+		if err := a.CheckCurrentPermissions(cfg); err != nil {
+			return nil, err
 		}
 	}
 
 	if cfg.File != "" {
-		if err := p.CheckConfigFilePermissions(cfg); err != nil {
-			return err
+		if err := a.CheckConfigFilePermissions(cfg); err != nil {
+			return nil, err
 		}
 	}
 
-	return nil
+	return a.problems, nil
 }
 
-func (p *Problems) CheckHost(cfg *models.Config) {
+func (a *Analyzer) CheckHost(cfg *models.Config) {
 	if cfg.Host == "0.0.0.0" {
-		*p = append(*p, models.Problem{
+		a.problems = append(a.problems, models.Problem{
 			Filename:       cfg.File,
 			Path:           "server.host",
 			Description:    "Сервер слушает на всех хостах (0.0.0.0).",
@@ -50,7 +52,7 @@ func (p *Problems) CheckHost(cfg *models.Config) {
 	}
 }
 
-func (p *Problems) CheckPassword(cfg *models.Config) {
+func (a *Analyzer) CheckPassword(cfg *models.Config) {
 	hiddenPasswordSymbols := map[string]string{
 		"${": "}",
 		"$(": ")",
@@ -66,7 +68,7 @@ func (p *Problems) CheckPassword(cfg *models.Config) {
 		}
 
 		if !seemsSecure {
-			*p = append(*p, models.Problem{
+			a.problems = append(a.problems, models.Problem{
 				Filename:       cfg.File,
 				Path:           "database.password",
 				Description:    "Пароль в открытом виде.",
@@ -77,9 +79,9 @@ func (p *Problems) CheckPassword(cfg *models.Config) {
 	}
 }
 
-func (p *Problems) CheckTLS(cfg *models.Config) {
+func (a *Analyzer) CheckTLS(cfg *models.Config) {
 	if !cfg.Server.TlsVerify {
-		*p = append(*p, models.Problem{
+		a.problems = append(a.problems, models.Problem{
 			Filename:       cfg.File,
 			Path:           "server.tls_verify",
 			Description:    "TLS проверка выключена.",
@@ -89,9 +91,9 @@ func (p *Problems) CheckTLS(cfg *models.Config) {
 	}
 }
 
-func (p *Problems) CheckLogLevel(cfg *models.Config) {
+func (a *Analyzer) CheckLogLevel(cfg *models.Config) {
 	if cfg.Log.Level == "debug" {
-		*p = append(*p, models.Problem{
+		a.problems = append(a.problems, models.Problem{
 			Filename:       cfg.File,
 			Path:           "log.level",
 			Description:    "логирование в debug-режиме.",
@@ -101,7 +103,7 @@ func (p *Problems) CheckLogLevel(cfg *models.Config) {
 	}
 }
 
-func (p *Problems) CheckAlgorithm(cfg *models.Config) {
+func (a *Analyzer) CheckAlgorithm(cfg *models.Config) {
 	insecureAlgorithms := map[string]string{
 		"MD5":      "слишком слабый алгоритм -",
 		"sha1":     "устаревший алгоритм -",
@@ -117,7 +119,7 @@ func (p *Problems) CheckAlgorithm(cfg *models.Config) {
 	if cfg.DigestAlgorithm != "" {
 		reason, ok := insecureAlgorithms[cfg.DigestAlgorithm]
 		if ok {
-			*p = append(*p, models.Problem{
+			a.problems = append(a.problems, models.Problem{
 				Filename:       cfg.File,
 				Path:           "cfg.digest-algorithm",
 				Description:    fmt.Sprintf("%s %s.", reason, cfg.DigestAlgorithm),
@@ -128,9 +130,9 @@ func (p *Problems) CheckAlgorithm(cfg *models.Config) {
 	}
 }
 
-func (p *Problems) CheckPermissionsToSet(cfg *models.Config) {
+func (a *Analyzer) CheckPermissionsToSet(cfg *models.Config) {
 	if cfg.Permissions == "0777" || cfg.Permissions == "777" {
-		*p = append(*p, models.Problem{
+		a.problems = append(a.problems, models.Problem{
 			Filename:       cfg.File,
 			Path:           "storage.permissions",
 			Description:    "слишком широкие права доступа.",
@@ -140,7 +142,7 @@ func (p *Problems) CheckPermissionsToSet(cfg *models.Config) {
 	}
 }
 
-func (p *Problems) CheckCurrentPermissions(cfg *models.Config) error {
+func (a *Analyzer) CheckCurrentPermissions(cfg *models.Config) error {
 
 	info, err := os.Stat(cfg.Storage.Path)
 	if err != nil {
@@ -150,7 +152,7 @@ func (p *Problems) CheckCurrentPermissions(cfg *models.Config) error {
 	mode := info.Mode().Perm()
 
 	if mode&0004 != 0 {
-		*p = append(*p, models.Problem{
+		a.problems = append(a.problems, models.Problem{
 			Filename:       cfg.Storage.Path,
 			Path:           "storage.path",
 			Description:    fmt.Sprintf("слишком широкие права доступа для файла %s: другие могут читать файл.", cfg.Storage.Path),
@@ -160,7 +162,7 @@ func (p *Problems) CheckCurrentPermissions(cfg *models.Config) error {
 	}
 
 	if mode&0002 != 0 {
-		*p = append(*p, models.Problem{
+		a.problems = append(a.problems, models.Problem{
 			Filename:       cfg.Storage.Path,
 			Path:           "storage.path",
 			Description:    fmt.Sprintf("слишком широкие права доступа для файла %s: другие могут писать в файл.", cfg.Storage.Path),
@@ -170,7 +172,7 @@ func (p *Problems) CheckCurrentPermissions(cfg *models.Config) error {
 	}
 
 	if mode&0020 != 0 {
-		*p = append(*p, models.Problem{
+		a.problems = append(a.problems, models.Problem{
 			Filename:       cfg.File,
 			Path:           "storage.path",
 			Description:    fmt.Sprintf("слишком широкие права доступа для файла %s: группа может писать в файл.", cfg.Storage.Path),
@@ -182,7 +184,7 @@ func (p *Problems) CheckCurrentPermissions(cfg *models.Config) error {
 	return nil
 }
 
-func (p *Problems) CheckConfigFilePermissions(cfg *models.Config) error {
+func (a *Analyzer) CheckConfigFilePermissions(cfg *models.Config) error {
 	info, err := os.Stat(cfg.File)
 	if err != nil {
 		return fmt.Errorf("ошибка открытия файла. Возможно, файл не существует")
@@ -191,7 +193,7 @@ func (p *Problems) CheckConfigFilePermissions(cfg *models.Config) error {
 	mode := info.Mode().Perm()
 
 	if mode&0002 != 0 {
-		*p = append(*p, models.Problem{
+		a.problems = append(a.problems, models.Problem{
 			Filename:       cfg.File,
 			Path:           "entire config",
 			Description:    "слишком широкие права доступа: другие могут писать в файл конфигурации.",
@@ -201,7 +203,7 @@ func (p *Problems) CheckConfigFilePermissions(cfg *models.Config) error {
 	}
 
 	if mode&0020 != 0 {
-		*p = append(*p, models.Problem{
+		a.problems = append(a.problems, models.Problem{
 			Filename:       cfg.File,
 			Path:           "entire config",
 			Description:    "слишком широкие права доступа: группа может писать в файл конфигурации.",

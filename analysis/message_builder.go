@@ -3,9 +3,11 @@ package analysis
 import (
 	"fmt"
 	"strings"
+
+	"github.com/VysMax/analyze-cfg/models"
 )
 
-func MessageBuilder(filepath string, problems Problems) string {
+func MessageBuilder(filepath string, problems []models.Problem) string {
 	var sb strings.Builder
 
 	if filepath != "" {

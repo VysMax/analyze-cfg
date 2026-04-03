@@ -4,11 +4,19 @@ import (
 	"encoding/json"
 	"net/http"
 
-	"github.com/VysMax/analyze-cfg/analysis"
 	"github.com/VysMax/analyze-cfg/models"
+	"github.com/VysMax/analyze-cfg/usecase"
 )
 
-func AnalyzeREST(w http.ResponseWriter, r *http.Request) {
+type Handler struct {
+	service *usecase.Service
+}
+
+func NewHandler(s *usecase.Service) *Handler {
+	return &Handler{service: s}
+}
+
+func (h *Handler) Analyze(w http.ResponseWriter, r *http.Request) {
 	if r.Method != http.MethodPost {
 		http.Error(w, "Method not allowed", http.StatusMethodNotAllowed)
 		return
@@ -20,8 +28,8 @@ func AnalyzeREST(w http.ResponseWriter, r *http.Request) {
 		http.Error(w, "Invalid request body", http.StatusBadRequest)
 	}
 
-	var problems analysis.Problems
-	if err := problems.AnalyzeCfg(req); err != nil {
+	problems, err := h.service.AnalyzeCfg(req)
+	if err != nil {
 		http.Error(w, "Failed to analyse config", http.StatusInternalServerError)
 	}
 

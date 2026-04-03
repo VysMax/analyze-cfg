@@ -447,9 +447,9 @@ const file_proto_analyze_cfg_proto_rawDesc = "" +
 	"\x04path\x18\x02 \x01(\tR\x04path\x12 \n" +
 	"\vdescription\x18\x03 \x01(\tR\vdescription\x12&\n" +
 	"\x0erecommendation\x18\x04 \x01(\tR\x0erecommendation\x12\x1a\n" +
-	"\bseverity\x18\x05 \x01(\tR\bseverity2O\n" +
-	"\vCfgAnalyzer\x12@\n" +
-	"\vAnalyzeGRPC\x12\x17.analyze.AnalyzeRequest\x1a\x18.analyze.AnalyzeResponseB\tZ\a./protob\x06proto3"
+	"\bseverity\x18\x05 \x01(\tR\bseverity2K\n" +
+	"\vCfgAnalyzer\x12<\n" +
+	"\aAnalyze\x12\x17.analyze.AnalyzeRequest\x1a\x18.analyze.AnalyzeResponseB\tZ\a./protob\x06proto3"
 
 var (
 	file_proto_analyze_cfg_proto_rawDescOnce sync.Once
@@ -479,8 +479,8 @@ var file_proto_analyze_cfg_proto_depIdxs = []int32{
 	4, // 2: analyze.AnalyzeRequest.storage:type_name -> analyze.StorageConfig
 	5, // 3: analyze.AnalyzeRequest.log:type_name -> analyze.LogConfig
 	6, // 4: analyze.AnalyzeResponse.problems:type_name -> analyze.Problem
-	0, // 5: analyze.CfgAnalyzer.AnalyzeGRPC:input_type -> analyze.AnalyzeRequest
-	1, // 6: analyze.CfgAnalyzer.AnalyzeGRPC:output_type -> analyze.AnalyzeResponse
+	0, // 5: analyze.CfgAnalyzer.Analyze:input_type -> analyze.AnalyzeRequest
+	1, // 6: analyze.CfgAnalyzer.Analyze:output_type -> analyze.AnalyzeResponse
 	6, // [6:7] is the sub-list for method output_type
 	5, // [5:6] is the sub-list for method input_type
 	5, // [5:5] is the sub-list for extension type_name

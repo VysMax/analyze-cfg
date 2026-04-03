@@ -6,7 +6,7 @@ package analyze;
 option go_package = "./proto";
 
 service CfgAnalyzer {
-    rpc AnalyzeGRPC(AnalyzeRequest) returns (AnalyzeResponse);
+    rpc Analyze(AnalyzeRequest) returns (AnalyzeResponse);
 }
 
 message AnalyzeRequest {

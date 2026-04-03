@@ -19,6 +19,7 @@ import (
 	grpchandle "github.com/VysMax/analyze-cfg/grpc"
 	"github.com/VysMax/analyze-cfg/models"
 	rest "github.com/VysMax/analyze-cfg/rest"
+	"github.com/VysMax/analyze-cfg/usecase"
 	"github.com/joho/godotenv"
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/reflection"
@@ -39,7 +40,11 @@ func main() {
 	}
 
 	if *apiMode {
-		http.HandleFunc("/analyze", rest.AnalyzeREST)
+		analyzer := analysis.NewAnalyzer()
+		usecase := usecase.New(analyzer)
+		handler := rest.NewHandler(usecase)
+
+		http.HandleFunc("/analyze", handler.Analyze)
 
 		server := &http.Server{
 			Addr: os.Getenv("PORT"),
@@ -72,13 +77,17 @@ func main() {
 	}
 
 	if *grpcMode {
+		analyzer := analysis.NewAnalyzer()
+		usecase := usecase.New(analyzer)
+		handler := grpchandle.NewHandler(usecase)
+
 		lis, err := net.Listen("tcp", os.Getenv("PORT"))
 		if err != nil {
 			log.Fatalf("ошибка запуска сервера: %v", err)
 		}
 
 		grpcServer := grpc.NewServer()
-		pb.RegisterCfgAnalyzerServer(grpcServer, &grpchandle.Server{})
+		pb.RegisterCfgAnalyzerServer(grpcServer, handler)
 
 		reflection.Register(grpcServer)
 
@@ -100,25 +109,22 @@ func main() {
 	}
 
 	var (
-		p       analysis.Problems
 		cfg     models.Config
 		message string
 	)
 
-	problems := analysis.NewProblems(p)
-
 	switch *isStdin {
 	case true:
 
-		*problems, err = analysis.AnalyzeStdin(os.Stdin, &cfg)
+		problems, err := analysis.AnalyzeStdin(os.Stdin, &cfg)
 		if err != nil {
 			fmt.Fprintf(os.Stderr, "ошибка десериализации из стандартного ввода: %v\n", err)
 			os.Exit(1)
 		}
 
-		message = analysis.MessageBuilder("", *problems)
+		message = analysis.MessageBuilder("", problems)
 
-		if len(*problems) == 0 {
+		if len(problems) == 0 {
 			fmt.Println(message)
 			os.Exit(0)
 		}
@@ -152,9 +158,9 @@ func main() {
 				os.Exit(0)
 			}
 
-			for _, *problems = range multFileProblems {
-				if len(*problems) > 0 {
-					message = analysis.MessageBuilder((*problems)[0].Filename, *problems)
+			for _, problems := range multFileProblems {
+				if len(problems) > 0 {
+					message = analysis.MessageBuilder(problems[0].Filename, problems)
 					messages = append(messages, message)
 				}
 
@@ -164,15 +170,15 @@ func main() {
 		} else {
 			cfg.File = flag.Arg(0)
 
-			*problems, err = analysis.AnalyzeFile(&cfg)
+			problems, err := analysis.AnalyzeFile(&cfg)
 			if err != nil {
 				fmt.Fprintf(os.Stderr, "ошибка анализа файла: %v\n", err)
 				os.Exit(1)
 			}
 
-			message = analysis.MessageBuilder(cfg.File, *problems)
+			message = analysis.MessageBuilder(cfg.File, problems)
 
-			if len(*problems) == 0 {
+			if len(problems) == 0 {
 				fmt.Println(message)
 				os.Exit(0)
 			}

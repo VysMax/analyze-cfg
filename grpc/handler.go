@@ -2,22 +2,26 @@ package grpchandle
 
 import (
 	"context"
-	"fmt"
 
-	"github.com/VysMax/analyze-cfg/analysis"
 	pb "github.com/VysMax/analyze-cfg/gen/proto"
 	"github.com/VysMax/analyze-cfg/models"
+	"github.com/VysMax/analyze-cfg/usecase"
 )
 
 type Server struct {
 	pb.UnimplementedCfgAnalyzerServer
+	service *usecase.Service
 }
 
-func (s *Server) AnalyzeGRPC(ctx context.Context, req *pb.AnalyzeRequest) (*pb.AnalyzeResponse, error) {
+func NewHandler(s *usecase.Service) *Server {
+	return &Server{service: s}
+}
+
+func (s *Server) Analyze(ctx context.Context, req *pb.AnalyzeRequest) (*pb.AnalyzeResponse, error) {
 	cfg := convertFromPb(req)
 
-	var problems analysis.Problems
-	if err := problems.AnalyzeCfg(cfg); err != nil {
+	problems, err := s.service.AnalyzeCfg(cfg)
+	if err != nil {
 		return nil, err
 	}
 
@@ -37,8 +41,6 @@ func (s *Server) AnalyzeGRPC(ctx context.Context, req *pb.AnalyzeRequest) (*pb.A
 
 func convertFromPb(req *pb.AnalyzeRequest) *models.Config {
 	cfg := &models.Config{}
-
-	fmt.Println(req.Server)
 
 	if req.Server != nil {
 		cfg.Server.Host = req.Server.Host

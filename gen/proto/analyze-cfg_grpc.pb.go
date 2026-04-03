@@ -19,14 +19,14 @@ import (
 const _ = grpc.SupportPackageIsVersion9
 
 const (
-	CfgAnalyzer_AnalyzeGRPC_FullMethodName = "/analyze.CfgAnalyzer/AnalyzeGRPC"
+	CfgAnalyzer_Analyze_FullMethodName = "/analyze.CfgAnalyzer/Analyze"
 )
 
 // CfgAnalyzerClient is the client API for CfgAnalyzer service.
 //
 // For semantics around ctx use and closing/ending streaming RPCs, please refer to https://pkg.go.dev/google.golang.org/grpc/?tab=doc#ClientConn.NewStream.
 type CfgAnalyzerClient interface {
-	AnalyzeGRPC(ctx context.Context, in *AnalyzeRequest, opts ...grpc.CallOption) (*AnalyzeResponse, error)
+	Analyze(ctx context.Context, in *AnalyzeRequest, opts ...grpc.CallOption) (*AnalyzeResponse, error)
 }
 
 type cfgAnalyzerClient struct {
@@ -37,10 +37,10 @@ func NewCfgAnalyzerClient(cc grpc.ClientConnInterface) CfgAnalyzerClient {
 	return &cfgAnalyzerClient{cc}
 }
 
-func (c *cfgAnalyzerClient) AnalyzeGRPC(ctx context.Context, in *AnalyzeRequest, opts ...grpc.CallOption) (*AnalyzeResponse, error) {
+func (c *cfgAnalyzerClient) Analyze(ctx context.Context, in *AnalyzeRequest, opts ...grpc.CallOption) (*AnalyzeResponse, error) {
 	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
 	out := new(AnalyzeResponse)
-	err := c.cc.Invoke(ctx, CfgAnalyzer_AnalyzeGRPC_FullMethodName, in, out, cOpts...)
+	err := c.cc.Invoke(ctx, CfgAnalyzer_Analyze_FullMethodName, in, out, cOpts...)
 	if err != nil {
 		return nil, err
 	}
@@ -51,7 +51,7 @@ func (c *cfgAnalyzerClient) AnalyzeGRPC(ctx context.Context, in *AnalyzeRequest,
 // All implementations must embed UnimplementedCfgAnalyzerServer
 // for forward compatibility.
 type CfgAnalyzerServer interface {
-	AnalyzeGRPC(context.Context, *AnalyzeRequest) (*AnalyzeResponse, error)
+	Analyze(context.Context, *AnalyzeRequest) (*AnalyzeResponse, error)
 	mustEmbedUnimplementedCfgAnalyzerServer()
 }
 
@@ -62,8 +62,8 @@ type CfgAnalyzerServer interface {
 // pointer dereference when methods are called.
 type UnimplementedCfgAnalyzerServer struct{}
 
-func (UnimplementedCfgAnalyzerServer) AnalyzeGRPC(context.Context, *AnalyzeRequest) (*AnalyzeResponse, error) {
-	return nil, status.Error(codes.Unimplemented, "method AnalyzeGRPC not implemented")
+func (UnimplementedCfgAnalyzerServer) Analyze(context.Context, *AnalyzeRequest) (*AnalyzeResponse, error) {
+	return nil, status.Error(codes.Unimplemented, "method Analyze not implemented")
 }
 func (UnimplementedCfgAnalyzerServer) mustEmbedUnimplementedCfgAnalyzerServer() {}
 func (UnimplementedCfgAnalyzerServer) testEmbeddedByValue()                     {}
@@ -86,20 +86,20 @@ func RegisterCfgAnalyzerServer(s grpc.ServiceRegistrar, srv CfgAnalyzerServer) {
 	s.RegisterService(&CfgAnalyzer_ServiceDesc, srv)
 }
 
-func _CfgAnalyzer_AnalyzeGRPC_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+func _CfgAnalyzer_Analyze_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
 	in := new(AnalyzeRequest)
 	if err := dec(in); err != nil {
 		return nil, err
 	}
 	if interceptor == nil {
-		return srv.(CfgAnalyzerServer).AnalyzeGRPC(ctx, in)
+		return srv.(CfgAnalyzerServer).Analyze(ctx, in)
 	}
 	info := &grpc.UnaryServerInfo{
 		Server:     srv,
-		FullMethod: CfgAnalyzer_AnalyzeGRPC_FullMethodName,
+		FullMethod: CfgAnalyzer_Analyze_FullMethodName,
 	}
 	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return srv.(CfgAnalyzerServer).AnalyzeGRPC(ctx, req.(*AnalyzeRequest))
+		return srv.(CfgAnalyzerServer).Analyze(ctx, req.(*AnalyzeRequest))
 	}
 	return interceptor(ctx, in, info, handler)
 }
@@ -112,8 +112,8 @@ var CfgAnalyzer_ServiceDesc = grpc.ServiceDesc{
 	HandlerType: (*CfgAnalyzerServer)(nil),
 	Methods: []grpc.MethodDesc{
 		{
-			MethodName: "AnalyzeGRPC",
-			Handler:    _CfgAnalyzer_AnalyzeGRPC_Handler,
+			MethodName: "Analyze",
+			Handler:    _CfgAnalyzer_Analyze_Handler,
 		},
 	},
 	Streams:  []grpc.StreamDesc{},
