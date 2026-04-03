@@ -21,7 +21,7 @@ func AnalyseHandler(w http.ResponseWriter, r *http.Request) {
 	}
 
 	var problems analysis.Problems
-	if err := problems.AnalyseCfg(req); err != nil {
+	if err := problems.AnalyzeCfg(req); err != nil {
 		http.Error(w, "Failed to analyse config", http.StatusInternalServerError)
 	}
 

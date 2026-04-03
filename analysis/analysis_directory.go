@@ -7,7 +7,7 @@ import (
 	"github.com/VysMax/analyze-cfg/models"
 )
 
-func AnalyseDirectory(root string, cfg *models.Config) ([]Problems, error) {
+func AnalyzeDirectory(root string, cfg *models.Config) ([]Problems, error) {
 	var allowedExts = map[string]struct{}{
 		".json": {},
 		".yaml": {},
@@ -30,7 +30,7 @@ func AnalyseDirectory(root string, cfg *models.Config) ([]Problems, error) {
 
 		cfg.File = path
 
-		problems, err := AnalyseFile(cfg)
+		problems, err := AnalyzeFile(cfg)
 		if err != nil {
 			return err
 		}

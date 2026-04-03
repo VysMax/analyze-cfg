@@ -1,6 +1,6 @@
 .PHONY: build
 
-APP_NAME = Analyse-Cfg
+APP_NAME = Analyze-Cfg
 
 
 build:

@@ -107,7 +107,7 @@ func main() {
 	switch *isStdin {
 	case true:
 
-		problems, err = analysis.AnalysisStdin(os.Stdin, &cfg)
+		problems, err = analysis.AnalyzeStdin(os.Stdin, &cfg)
 		if err != nil {
 			fmt.Fprintf(os.Stderr, "ошибка десериализации из стандартного ввода: %v\n", err)
 			os.Exit(1)
@@ -129,7 +129,7 @@ func main() {
 
 		if info.IsDir() {
 			dirName := flag.Arg(0)
-			multFileProblems, err := analysis.AnalyseDirectory(dirName, &cfg)
+			multFileProblems, err := analysis.AnalyzeDirectory(dirName, &cfg)
 			if err != nil {
 				fmt.Fprintf(os.Stderr, "ошибка анализа папки %v\n", err)
 				os.Exit(1)
@@ -161,7 +161,7 @@ func main() {
 		} else {
 			cfg.File = flag.Arg(0)
 
-			problems, err = analysis.AnalyseFile(&cfg)
+			problems, err = analysis.AnalyzeFile(&cfg)
 			if err != nil {
 				fmt.Fprintf(os.Stderr, "ошибка анализа файла: %v\n", err)
 				os.Exit(1)

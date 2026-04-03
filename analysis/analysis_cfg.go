@@ -10,7 +10,7 @@ import (
 
 type Problems []models.Problem
 
-func (p *Problems) AnalyseCfg(cfg *models.Config) error {
+func (p *Problems) AnalyzeCfg(cfg *models.Config) error {
 	p.CheckHost(cfg)
 	p.CheckPassword(cfg)
 	p.CheckTLS(cfg)

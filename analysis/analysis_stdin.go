@@ -12,7 +12,7 @@ import (
 	"gopkg.in/yaml.v3"
 )
 
-func AnalysisStdin(input *os.File, cfg *models.Config) (Problems, error) {
+func AnalyzeStdin(input *os.File, cfg *models.Config) (Problems, error) {
 	var r io.Reader
 	r = input
 
@@ -56,7 +56,7 @@ func AnalysisStdin(input *os.File, cfg *models.Config) (Problems, error) {
 	}
 
 	var problems Problems
-	if err = problems.AnalyseCfg(cfg); err != nil {
+	if err = problems.AnalyzeCfg(cfg); err != nil {
 		return nil, fmt.Errorf("ошибка проверки конфигурации: %v\n", err)
 	}
 

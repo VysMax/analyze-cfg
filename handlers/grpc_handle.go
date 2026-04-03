@@ -16,7 +16,7 @@ func (s *Server) Analyze(ctx context.Context, req *pb.AnalyzeRequest) (*pb.Analy
 	cfg := convertFromPb(req)
 
 	var problems analysis.Problems
-	if err := problems.AnalyseCfg(cfg); err != nil {
+	if err := problems.AnalyzeCfg(cfg); err != nil {
 		return nil, err
 	}
 

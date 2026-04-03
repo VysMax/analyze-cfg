@@ -11,7 +11,7 @@ import (
 	"gopkg.in/yaml.v3"
 )
 
-func AnalyseFile(cfg *models.Config) (Problems, error) {
+func AnalyzeFile(cfg *models.Config) (Problems, error) {
 
 	file, err := os.Open(cfg.File)
 	if err != nil {
@@ -43,7 +43,7 @@ func AnalyseFile(cfg *models.Config) (Problems, error) {
 	}
 
 	var problems Problems
-	if err = problems.AnalyseCfg(cfg); err != nil {
+	if err = problems.AnalyzeCfg(cfg); err != nil {
 		return nil, fmt.Errorf("ошибка проверки конфигурации: %v", err)
 	}
 
