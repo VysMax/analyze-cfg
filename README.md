@@ -80,7 +80,7 @@
 ```
 ./Analyse-Cfg . // анализ текущей папки
 ```
-
+## Проверка конфигурации из стандартного ввода с флагом --stdin
 ```
 ./Analyse-Cfg --stdin <<EOF
 {"server": {"host": "0.0.0.0", "tls_verify": false}, "database":{"password": "123"}, "storage": {"path":"storage/storage.txt", "permissions":"0777", "digest_algorithm":"MD5"}, "log": {"output":"stdout", "level":"debug"}}
