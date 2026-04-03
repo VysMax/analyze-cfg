@@ -1,11 +1,11 @@
 package models
 
 type Config struct {
-	ConfigPath string
-	Server     `json:"server" yaml:"server"`
-	Database   `json:"database" yaml:"database"`
-	Storage    `json:"storage" yaml:"storage"`
-	Log        `json:"log" yaml:"log"`
+	Path     string `json:"path" yaml:"path"`
+	Server   `json:"server" yaml:"server"`
+	Database `json:"database" yaml:"database"`
+	Storage  `json:"storage" yaml:"storage"`
+	Log      `json:"log" yaml:"log"`
 }
 
 type Server struct {

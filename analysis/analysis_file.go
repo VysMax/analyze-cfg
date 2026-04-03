@@ -13,9 +13,9 @@ import (
 
 func AnalyseFile(cfg *models.Config) (Problems, error) {
 
-	file, err := os.Open(cfg.ConfigPath)
+	file, err := os.Open(cfg.Path)
 	if err != nil {
-		return nil, fmt.Errorf("ошибка открытия файла %s: %v\n", cfg.ConfigPath, err)
+		return nil, fmt.Errorf("ошибка открытия файла %s: %v\n", cfg.Path, err)
 	}
 	defer file.Close()
 
@@ -26,7 +26,7 @@ func AnalyseFile(cfg *models.Config) (Problems, error) {
 		return nil, fmt.Errorf("ошибка чтения из стандартного ввода: %v\n", err)
 	}
 
-	format := path.Ext(cfg.ConfigPath)
+	format := path.Ext(cfg.Path)
 
 	switch format {
 	case ".json":

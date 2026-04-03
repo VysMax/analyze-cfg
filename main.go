@@ -5,6 +5,7 @@ import (
 	"flag"
 	"fmt"
 	"log"
+	"net"
 	"net/http"
 	"os"
 	"os/signal"
@@ -13,13 +14,17 @@ import (
 	"time"
 
 	"github.com/VysMax/analyze-cfg/analysis"
+	pb "github.com/VysMax/analyze-cfg/gen/proto"
 	"github.com/VysMax/analyze-cfg/handlers"
 	"github.com/VysMax/analyze-cfg/models"
 	"github.com/joho/godotenv"
+	"google.golang.org/grpc"
+	"google.golang.org/grpc/reflection"
 )
 
 func main() {
 	apiMode := flag.Bool("api", false, "Запуск в качестве REST API")
+	grpcMode := flag.Bool("grpc", false, "Запуск в качестве gRPC")
 	isSilent := flag.Bool("s", false, "не выходить с ошибкой при наличии проблем")
 	flag.BoolVar(isSilent, "silent", false, "не выходить с ошибкой при наличии проблем")
 	isStdin := flag.Bool("stdin", false, "прочитать конфигурацию из стандартного потока ввода вместо файла")
@@ -64,6 +69,34 @@ func main() {
 
 	}
 
+	if *grpcMode {
+		lis, err := net.Listen("tcp", os.Getenv("PORT"))
+		if err != nil {
+			log.Fatalf("ошибка запуска сервера: %v", err)
+		}
+
+		grpcServer := grpc.NewServer()
+		pb.RegisterCfgAnalyzerServer(grpcServer, &handlers.Server{})
+
+		reflection.Register(grpcServer)
+
+		quit := make(chan os.Signal, 1)
+		signal.Notify(quit, os.Interrupt, syscall.SIGTERM)
+
+		go func() {
+			log.Printf("gRPC-сервер запущен на порту %s", os.Getenv("PORT"))
+			if err = grpcServer.Serve(lis); err != nil {
+				log.Fatalf("ошибка запуска сервера: %v", err)
+			}
+		}()
+
+		<-quit
+		log.Println("Получен сигнал завершения, выключение...")
+		grpcServer.GracefulStop()
+		log.Println("Сервер завершил работу.")
+		return
+	}
+
 	var (
 		problems analysis.Problems
 		cfg      models.Config
@@ -105,7 +138,7 @@ func main() {
 
 			message = strings.Join(messages, "\n")
 		} else {
-			cfg.ConfigPath = flag.Arg(0)
+			cfg.Path = flag.Arg(0)
 
 			problems, err = analysis.AnalyseFile(&cfg)
 			if err != nil {
@@ -113,7 +146,7 @@ func main() {
 				os.Exit(1)
 			}
 
-			message = analysis.MessageBuilder(cfg.ConfigPath, problems)
+			message = analysis.MessageBuilder(cfg.Path, problems)
 		}
 	}
 

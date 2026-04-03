@@ -1,8 +1,8 @@
 syntax = "proto3";
 
-package analyze-cfg;
+package analyze;
 
-option go_package = "github.com/VysMax/analyze-cfg/proto";
+option go_package = "./proto";
 
 service CfgAnalyzer {
     rpc Analyze(AnalyzeRequest) returns (AnalyzeResponse);
@@ -13,5 +13,40 @@ message AnalyzeRequest {
 }
 
 message AnalyzeResponse {
-    string result = 1;
+    repeated Problem problems = 2;
+}
+
+message Config {
+    ServerConfig server = 1;
+    DatabaseConfig database = 2;
+    StorageConfig storage = 3;
+    LogConfig log = 4;
+}
+
+message ServerConfig {
+    string host = 1;
+    bool tls_verify = 2;
+}
+
+message DatabaseConfig {
+    string password = 1;
+}
+
+message StorageConfig {
+    string path = 1;
+    string permissions = 2;
+    string digest_algorithm = 3;
+}
+
+message LogConfig {
+    string output = 1;
+    string level = 2;
+}
+
+message Problem {
+    string filename = 1;
+    string path = 2;
+    string description = 3;
+    string recommendation = 4;
+    string severity =5;
 }

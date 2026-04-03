@@ -31,7 +31,7 @@ func AnalyseDirectory(root string, cfg *models.Config) ([]Problems, error) {
 			return nil
 		}
 
-		cfg.ConfigPath = path
+		cfg.Path = path
 
 		problems, err := AnalyseFile(cfg)
 		if err != nil {
