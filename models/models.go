@@ -10,7 +10,7 @@ type Config struct {
 
 type Server struct {
 	Host      string `json:"host" yaml:"host"`
-	TlsVerify bool   `json:"tls_verify" yaml:"tls_verify"`
+	TlsVerify bool   `json:"tls_verify,omitempty" yaml:"tls_verify"`
 }
 
 type Database struct {

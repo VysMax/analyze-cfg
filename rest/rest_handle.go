@@ -1,4 +1,4 @@
-package handlers
+package rest
 
 import (
 	"encoding/json"
@@ -8,7 +8,7 @@ import (
 	"github.com/VysMax/analyze-cfg/models"
 )
 
-func AnalyseHandler(w http.ResponseWriter, r *http.Request) {
+func AnalyzeREST(w http.ResponseWriter, r *http.Request) {
 	if r.Method != http.MethodPost {
 		http.Error(w, "Method not allowed", http.StatusMethodNotAllowed)
 		return

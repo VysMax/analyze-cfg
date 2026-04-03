@@ -10,6 +10,11 @@ import (
 
 type Problems []models.Problem
 
+func NewProblems(p Problems) *Problems {
+	p = make(Problems, 0)
+	return &p
+}
+
 func (p *Problems) AnalyzeCfg(cfg *models.Config) error {
 	p.CheckHost(cfg)
 	p.CheckPassword(cfg)

@@ -2,10 +2,11 @@ syntax = "proto3";
 
 package analyze;
 
+
 option go_package = "./proto";
 
 service CfgAnalyzer {
-    rpc Analyze(AnalyzeRequest) returns (AnalyzeResponse);
+    rpc AnalyzeGRPC(AnalyzeRequest) returns (AnalyzeResponse);
 }
 
 message AnalyzeRequest {

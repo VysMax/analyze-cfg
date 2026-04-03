@@ -24,7 +24,7 @@
 - либо без аргументов, но с флагами --api для запуска в качестве REST API-сервера и --grpc для запуска в качестве gRPC-сервера
 
 ```
-./Analyse-Cfg config.json
+./Analyze-Cfg config.json
 ```
 *Вывод*
 ```
@@ -45,7 +45,7 @@
 ```
 
 ```
-./Analyse-Cfg config
+./Analyze-Cfg config
 ```
 *Вывод*
 
@@ -78,11 +78,11 @@
 ```
 
 ```
-./Analyse-Cfg . // анализ текущей папки
+./Analyze-Cfg . // анализ текущей папки
 ```
 ## Проверка конфигурации из стандартного ввода с флагом --stdin
 ```
-./Analyse-Cfg --stdin <<EOF
+./Analyze-Cfg --stdin <<EOF
 {"server": {"host": "0.0.0.0", "tls_verify": false}, "database":{"password": "123"}, "storage": {"path":"storage/storage.txt", "permissions":"0777", "digest_algorithm":"MD5"}, "log": {"output":"stdout", "level":"debug"}}
 EOF
 ```
@@ -112,11 +112,11 @@ EOF
 С помощью флага --api можно запустить утилиту как REST API-сервер, принимающий массив конфигурационных настроек и возвращающий массив проблем с отдельными полями для пути к проблемному параметру, описанием проблемы, рекомендацией по устранению и степенью критичности
 
 ```
-./Analyse-Cfg --api
+./Analyze-Cfg --api
 ```
 
 ```
-curl -X POST http://localhost:8080/analyse \
+curl -X POST http://localhost:8080/analyze \
 -H "Content-Type: application/json" \
 -d '{"log": {"output":"stdout", "level":"debug"}}'
 ```
@@ -129,17 +129,25 @@ curl -X POST http://localhost:8080/analyse \
 С помощью флага --grpc можно запустить утилиту как REST API-сервер, принимающий массив конфигурационных настроек и возвращающий массив проблем с отдельными полями для пути к проблемному параметру, описанием проблемы, рекомендацией по устранению и степенью критичности
 
 ```
-./Analyse-Cfg --grpc
+./Analyze-Cfg --grpc
 ```
 
 ```
-grpcurl -plaintext -d '{"log": {"output":"stdout", "level":"debug"}}' localhost:8080 analyze.CfgAnalyzer/Analyze
+grpcurl -plaintext -d '{"server":{"host": "0.0.0.0","tls_verify":false}, "log": {"output":"stdout", "level":"debug"}}' localhost:8080 analyze.CfgAnalyze
+r/AnalyzeGRPC
 ```
 
 *Вывод*
 ```
 {
   "problems": [
+    {
+      "filename": "from GRPC",
+      "path": "server.host",
+      "description": "Сервер слушает на всех хостах (0.0.0.0).",
+      "recommendation": "Ограничьте доступ. Для локального доступа используйте 127.0.0.1 .",
+      "severity": "HIGH"
+    },
     {
       "filename": "from GRPC",
       "path": "server.tls_verify",
@@ -162,9 +170,9 @@ grpcurl -plaintext -d '{"log": {"output":"stdout", "level":"debug"}}' localhost:
 В тихом режиме работа завершается без ошибки в случае нахождения опасных настроек. Неприменимо к запуску в качестве REST API-сервера и в качестве gRPC-сервера
 
 ```
-./Analyse-Cfg -s config.json
+./Analyze-Cfg -s config.json
 ```
 
 ```
-./Analyse-Cfg --silent config.json
+./Analyze-Cfg --silent config.json
 ```
