@@ -13,7 +13,7 @@ type Server struct {
 }
 
 func (s *Server) Analyze(ctx context.Context, req *pb.AnalyzeRequest) (*pb.AnalyzeResponse, error) {
-	cfg := convertFromPb(req.Config)
+	cfg := convertFromPb(req)
 
 	var problems analysis.Problems
 	if err := problems.AnalyseCfg(cfg); err != nil {
@@ -34,26 +34,26 @@ func (s *Server) Analyze(ctx context.Context, req *pb.AnalyzeRequest) (*pb.Analy
 	return &pb.AnalyzeResponse{Problems: pbProblems}, nil
 }
 
-func convertFromPb(pbCfg *pb.Config) *models.Config {
+func convertFromPb(req *pb.AnalyzeRequest) *models.Config {
 	cfg := &models.Config{}
 
-	if pbCfg.Server != nil {
-		cfg.Server.Host = pbCfg.Server.Host
-		cfg.Server.TlsVerify = pbCfg.Server.TlsVerify
+	if req.Server != nil {
+		cfg.Server.Host = req.Server.Host
+		cfg.Server.TlsVerify = req.Server.TlsVerify
 	}
 
-	if pbCfg.Database != nil {
-		cfg.Database.Password = pbCfg.Database.Password
+	if req.Database != nil {
+		cfg.Database.Password = req.Database.Password
 	}
 
-	if pbCfg.Storage != nil {
-		cfg.Storage.Path = pbCfg.Storage.Path
-		cfg.Storage.Permissions = pbCfg.Storage.Permissions
-		cfg.Storage.DigestAlgorithm = pbCfg.Storage.DigestAlgorithm
+	if req.Storage != nil {
+		cfg.Storage.Path = req.Storage.Path
+		cfg.Storage.Permissions = req.Storage.Permissions
+		cfg.Storage.DigestAlgorithm = req.Storage.DigestAlgorithm
 	}
 
-	if pbCfg.Log != nil {
-		cfg.Log.Level = pbCfg.Log.Level
+	if req.Log != nil {
+		cfg.Log.Level = req.Log.Level
 	}
 	return cfg
 }

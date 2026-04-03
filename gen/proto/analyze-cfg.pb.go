@@ -23,7 +23,10 @@ const (
 
 type AnalyzeRequest struct {
 	state         protoimpl.MessageState `protogen:"open.v1"`
-	Config        *Config                `protobuf:"bytes,1,opt,name=config,proto3" json:"config,omitempty"`
+	Server        *ServerConfig          `protobuf:"bytes,1,opt,name=server,proto3" json:"server,omitempty"`
+	Database      *DatabaseConfig        `protobuf:"bytes,2,opt,name=database,proto3" json:"database,omitempty"`
+	Storage       *StorageConfig         `protobuf:"bytes,3,opt,name=storage,proto3" json:"storage,omitempty"`
+	Log           *LogConfig             `protobuf:"bytes,4,opt,name=log,proto3" json:"log,omitempty"`
 	unknownFields protoimpl.UnknownFields
 	sizeCache     protoimpl.SizeCache
 }
@@ -58,9 +61,30 @@ func (*AnalyzeRequest) Descriptor() ([]byte, []int) {
 	return file_proto_analyze_cfg_proto_rawDescGZIP(), []int{0}
 }
 
-func (x *AnalyzeRequest) GetConfig() *Config {
+func (x *AnalyzeRequest) GetServer() *ServerConfig {
 	if x != nil {
-		return x.Config
+		return x.Server
+	}
+	return nil
+}
+
+func (x *AnalyzeRequest) GetDatabase() *DatabaseConfig {
+	if x != nil {
+		return x.Database
+	}
+	return nil
+}
+
+func (x *AnalyzeRequest) GetStorage() *StorageConfig {
+	if x != nil {
+		return x.Storage
+	}
+	return nil
+}
+
+func (x *AnalyzeRequest) GetLog() *LogConfig {
+	if x != nil {
+		return x.Log
 	}
 	return nil
 }
@@ -109,74 +133,6 @@ func (x *AnalyzeResponse) GetProblems() []*Problem {
 	return nil
 }
 
-type Config struct {
-	state         protoimpl.MessageState `protogen:"open.v1"`
-	Server        *ServerConfig          `protobuf:"bytes,1,opt,name=server,proto3" json:"server,omitempty"`
-	Database      *DatabaseConfig        `protobuf:"bytes,2,opt,name=database,proto3" json:"database,omitempty"`
-	Storage       *StorageConfig         `protobuf:"bytes,3,opt,name=storage,proto3" json:"storage,omitempty"`
-	Log           *LogConfig             `protobuf:"bytes,4,opt,name=log,proto3" json:"log,omitempty"`
-	unknownFields protoimpl.UnknownFields
-	sizeCache     protoimpl.SizeCache
-}
-
-func (x *Config) Reset() {
-	*x = Config{}
-	mi := &file_proto_analyze_cfg_proto_msgTypes[2]
-	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
-	ms.StoreMessageInfo(mi)
-}
-
-func (x *Config) String() string {
-	return protoimpl.X.MessageStringOf(x)
-}
-
-func (*Config) ProtoMessage() {}
-
-func (x *Config) ProtoReflect() protoreflect.Message {
-	mi := &file_proto_analyze_cfg_proto_msgTypes[2]
-	if x != nil {
-		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
-		if ms.LoadMessageInfo() == nil {
-			ms.StoreMessageInfo(mi)
-		}
-		return ms
-	}
-	return mi.MessageOf(x)
-}
-
-// Deprecated: Use Config.ProtoReflect.Descriptor instead.
-func (*Config) Descriptor() ([]byte, []int) {
-	return file_proto_analyze_cfg_proto_rawDescGZIP(), []int{2}
-}
-
-func (x *Config) GetServer() *ServerConfig {
-	if x != nil {
-		return x.Server
-	}
-	return nil
-}
-
-func (x *Config) GetDatabase() *DatabaseConfig {
-	if x != nil {
-		return x.Database
-	}
-	return nil
-}
-
-func (x *Config) GetStorage() *StorageConfig {
-	if x != nil {
-		return x.Storage
-	}
-	return nil
-}
-
-func (x *Config) GetLog() *LogConfig {
-	if x != nil {
-		return x.Log
-	}
-	return nil
-}
-
 type ServerConfig struct {
 	state         protoimpl.MessageState `protogen:"open.v1"`
 	Host          string                 `protobuf:"bytes,1,opt,name=host,proto3" json:"host,omitempty"`
@@ -187,7 +143,7 @@ type ServerConfig struct {
 
 func (x *ServerConfig) Reset() {
 	*x = ServerConfig{}
-	mi := &file_proto_analyze_cfg_proto_msgTypes[3]
+	mi := &file_proto_analyze_cfg_proto_msgTypes[2]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -199,7 +155,7 @@ func (x *ServerConfig) String() string {
 func (*ServerConfig) ProtoMessage() {}
 
 func (x *ServerConfig) ProtoReflect() protoreflect.Message {
-	mi := &file_proto_analyze_cfg_proto_msgTypes[3]
+	mi := &file_proto_analyze_cfg_proto_msgTypes[2]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -212,7 +168,7 @@ func (x *ServerConfig) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use ServerConfig.ProtoReflect.Descriptor instead.
 func (*ServerConfig) Descriptor() ([]byte, []int) {
-	return file_proto_analyze_cfg_proto_rawDescGZIP(), []int{3}
+	return file_proto_analyze_cfg_proto_rawDescGZIP(), []int{2}
 }
 
 func (x *ServerConfig) GetHost() string {
@@ -238,7 +194,7 @@ type DatabaseConfig struct {
 
 func (x *DatabaseConfig) Reset() {
 	*x = DatabaseConfig{}
-	mi := &file_proto_analyze_cfg_proto_msgTypes[4]
+	mi := &file_proto_analyze_cfg_proto_msgTypes[3]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -250,7 +206,7 @@ func (x *DatabaseConfig) String() string {
 func (*DatabaseConfig) ProtoMessage() {}
 
 func (x *DatabaseConfig) ProtoReflect() protoreflect.Message {
-	mi := &file_proto_analyze_cfg_proto_msgTypes[4]
+	mi := &file_proto_analyze_cfg_proto_msgTypes[3]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -263,7 +219,7 @@ func (x *DatabaseConfig) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use DatabaseConfig.ProtoReflect.Descriptor instead.
 func (*DatabaseConfig) Descriptor() ([]byte, []int) {
-	return file_proto_analyze_cfg_proto_rawDescGZIP(), []int{4}
+	return file_proto_analyze_cfg_proto_rawDescGZIP(), []int{3}
 }
 
 func (x *DatabaseConfig) GetPassword() string {
@@ -284,7 +240,7 @@ type StorageConfig struct {
 
 func (x *StorageConfig) Reset() {
 	*x = StorageConfig{}
-	mi := &file_proto_analyze_cfg_proto_msgTypes[5]
+	mi := &file_proto_analyze_cfg_proto_msgTypes[4]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -296,7 +252,7 @@ func (x *StorageConfig) String() string {
 func (*StorageConfig) ProtoMessage() {}
 
 func (x *StorageConfig) ProtoReflect() protoreflect.Message {
-	mi := &file_proto_analyze_cfg_proto_msgTypes[5]
+	mi := &file_proto_analyze_cfg_proto_msgTypes[4]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -309,7 +265,7 @@ func (x *StorageConfig) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use StorageConfig.ProtoReflect.Descriptor instead.
 func (*StorageConfig) Descriptor() ([]byte, []int) {
-	return file_proto_analyze_cfg_proto_rawDescGZIP(), []int{5}
+	return file_proto_analyze_cfg_proto_rawDescGZIP(), []int{4}
 }
 
 func (x *StorageConfig) GetPath() string {
@@ -343,7 +299,7 @@ type LogConfig struct {
 
 func (x *LogConfig) Reset() {
 	*x = LogConfig{}
-	mi := &file_proto_analyze_cfg_proto_msgTypes[6]
+	mi := &file_proto_analyze_cfg_proto_msgTypes[5]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -355,7 +311,7 @@ func (x *LogConfig) String() string {
 func (*LogConfig) ProtoMessage() {}
 
 func (x *LogConfig) ProtoReflect() protoreflect.Message {
-	mi := &file_proto_analyze_cfg_proto_msgTypes[6]
+	mi := &file_proto_analyze_cfg_proto_msgTypes[5]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -368,7 +324,7 @@ func (x *LogConfig) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use LogConfig.ProtoReflect.Descriptor instead.
 func (*LogConfig) Descriptor() ([]byte, []int) {
-	return file_proto_analyze_cfg_proto_rawDescGZIP(), []int{6}
+	return file_proto_analyze_cfg_proto_rawDescGZIP(), []int{5}
 }
 
 func (x *LogConfig) GetOutput() string {
@@ -398,7 +354,7 @@ type Problem struct {
 
 func (x *Problem) Reset() {
 	*x = Problem{}
-	mi := &file_proto_analyze_cfg_proto_msgTypes[7]
+	mi := &file_proto_analyze_cfg_proto_msgTypes[6]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -410,7 +366,7 @@ func (x *Problem) String() string {
 func (*Problem) ProtoMessage() {}
 
 func (x *Problem) ProtoReflect() protoreflect.Message {
-	mi := &file_proto_analyze_cfg_proto_msgTypes[7]
+	mi := &file_proto_analyze_cfg_proto_msgTypes[6]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -423,7 +379,7 @@ func (x *Problem) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use Problem.ProtoReflect.Descriptor instead.
 func (*Problem) Descriptor() ([]byte, []int) {
-	return file_proto_analyze_cfg_proto_rawDescGZIP(), []int{7}
+	return file_proto_analyze_cfg_proto_rawDescGZIP(), []int{6}
 }
 
 func (x *Problem) GetFilename() string {
@@ -465,16 +421,14 @@ var File_proto_analyze_cfg_proto protoreflect.FileDescriptor
 
 const file_proto_analyze_cfg_proto_rawDesc = "" +
 	"\n" +
-	"\x17proto/analyze-cfg.proto\x12\aanalyze\"9\n" +
-	"\x0eAnalyzeRequest\x12'\n" +
-	"\x06config\x18\x01 \x01(\v2\x0f.analyze.ConfigR\x06config\"?\n" +
-	"\x0fAnalyzeResponse\x12,\n" +
-	"\bproblems\x18\x02 \x03(\v2\x10.analyze.ProblemR\bproblems\"\xc4\x01\n" +
-	"\x06Config\x12-\n" +
+	"\x17proto/analyze-cfg.proto\x12\aanalyze\"\xcc\x01\n" +
+	"\x0eAnalyzeRequest\x12-\n" +
 	"\x06server\x18\x01 \x01(\v2\x15.analyze.ServerConfigR\x06server\x123\n" +
 	"\bdatabase\x18\x02 \x01(\v2\x17.analyze.DatabaseConfigR\bdatabase\x120\n" +
 	"\astorage\x18\x03 \x01(\v2\x16.analyze.StorageConfigR\astorage\x12$\n" +
-	"\x03log\x18\x04 \x01(\v2\x12.analyze.LogConfigR\x03log\"A\n" +
+	"\x03log\x18\x04 \x01(\v2\x12.analyze.LogConfigR\x03log\"?\n" +
+	"\x0fAnalyzeResponse\x12,\n" +
+	"\bproblems\x18\x02 \x03(\v2\x10.analyze.ProblemR\bproblems\"A\n" +
 	"\fServerConfig\x12\x12\n" +
 	"\x04host\x18\x01 \x01(\tR\x04host\x12\x1d\n" +
 	"\n" +
@@ -509,31 +463,29 @@ func file_proto_analyze_cfg_proto_rawDescGZIP() []byte {
 	return file_proto_analyze_cfg_proto_rawDescData
 }
 
-var file_proto_analyze_cfg_proto_msgTypes = make([]protoimpl.MessageInfo, 8)
+var file_proto_analyze_cfg_proto_msgTypes = make([]protoimpl.MessageInfo, 7)
 var file_proto_analyze_cfg_proto_goTypes = []any{
 	(*AnalyzeRequest)(nil),  // 0: analyze.AnalyzeRequest
 	(*AnalyzeResponse)(nil), // 1: analyze.AnalyzeResponse
-	(*Config)(nil),          // 2: analyze.Config
-	(*ServerConfig)(nil),    // 3: analyze.ServerConfig
-	(*DatabaseConfig)(nil),  // 4: analyze.DatabaseConfig
-	(*StorageConfig)(nil),   // 5: analyze.StorageConfig
-	(*LogConfig)(nil),       // 6: analyze.LogConfig
-	(*Problem)(nil),         // 7: analyze.Problem
+	(*ServerConfig)(nil),    // 2: analyze.ServerConfig
+	(*DatabaseConfig)(nil),  // 3: analyze.DatabaseConfig
+	(*StorageConfig)(nil),   // 4: analyze.StorageConfig
+	(*LogConfig)(nil),       // 5: analyze.LogConfig
+	(*Problem)(nil),         // 6: analyze.Problem
 }
 var file_proto_analyze_cfg_proto_depIdxs = []int32{
-	2, // 0: analyze.AnalyzeRequest.config:type_name -> analyze.Config
-	7, // 1: analyze.AnalyzeResponse.problems:type_name -> analyze.Problem
-	3, // 2: analyze.Config.server:type_name -> analyze.ServerConfig
-	4, // 3: analyze.Config.database:type_name -> analyze.DatabaseConfig
-	5, // 4: analyze.Config.storage:type_name -> analyze.StorageConfig
-	6, // 5: analyze.Config.log:type_name -> analyze.LogConfig
-	0, // 6: analyze.CfgAnalyzer.Analyze:input_type -> analyze.AnalyzeRequest
-	1, // 7: analyze.CfgAnalyzer.Analyze:output_type -> analyze.AnalyzeResponse
-	7, // [7:8] is the sub-list for method output_type
-	6, // [6:7] is the sub-list for method input_type
-	6, // [6:6] is the sub-list for extension type_name
-	6, // [6:6] is the sub-list for extension extendee
-	0, // [0:6] is the sub-list for field type_name
+	2, // 0: analyze.AnalyzeRequest.server:type_name -> analyze.ServerConfig
+	3, // 1: analyze.AnalyzeRequest.database:type_name -> analyze.DatabaseConfig
+	4, // 2: analyze.AnalyzeRequest.storage:type_name -> analyze.StorageConfig
+	5, // 3: analyze.AnalyzeRequest.log:type_name -> analyze.LogConfig
+	6, // 4: analyze.AnalyzeResponse.problems:type_name -> analyze.Problem
+	0, // 5: analyze.CfgAnalyzer.Analyze:input_type -> analyze.AnalyzeRequest
+	1, // 6: analyze.CfgAnalyzer.Analyze:output_type -> analyze.AnalyzeResponse
+	6, // [6:7] is the sub-list for method output_type
+	5, // [5:6] is the sub-list for method input_type
+	5, // [5:5] is the sub-list for extension type_name
+	5, // [5:5] is the sub-list for extension extendee
+	0, // [0:5] is the sub-list for field type_name
 }
 
 func init() { file_proto_analyze_cfg_proto_init() }
@@ -547,7 +499,7 @@ func file_proto_analyze_cfg_proto_init() {
 			GoPackagePath: reflect.TypeOf(x{}).PkgPath(),
 			RawDescriptor: unsafe.Slice(unsafe.StringData(file_proto_analyze_cfg_proto_rawDesc), len(file_proto_analyze_cfg_proto_rawDesc)),
 			NumEnums:      0,
-			NumMessages:   8,
+			NumMessages:   7,
 			NumExtensions: 0,
 			NumServices:   1,
 		},

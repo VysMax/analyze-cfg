@@ -9,19 +9,16 @@ service CfgAnalyzer {
 }
 
 message AnalyzeRequest {
-    Config config = 1;
+    ServerConfig server = 1;
+    DatabaseConfig database = 2;
+    StorageConfig storage = 3;
+    LogConfig log = 4;
 }
 
 message AnalyzeResponse {
     repeated Problem problems = 2;
 }
 
-message Config {
-    ServerConfig server = 1;
-    DatabaseConfig database = 2;
-    StorageConfig storage = 3;
-    LogConfig log = 4;
-}
 
 message ServerConfig {
     string host = 1;
