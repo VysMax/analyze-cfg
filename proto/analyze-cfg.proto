@@ -45,5 +45,5 @@ message Problem {
     string path = 2;
     string description = 3;
     string recommendation = 4;
-    string severity =5;
+    string severity = 5;
 }

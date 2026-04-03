@@ -1,0 +1,19 @@
+.PHONY: build run
+
+APP_NAME = Analyse-Cfg
+
+
+build:
+	@echo "Building $(APP_NAME)"
+	go build -o $(APP_NAME)
+
+analyse-current-directory:
+	./$(APP_NAME) .
+
+grpc-gen:
+	protoc --go_out=./gen --go-grpc_out=./gen proto/analyze-cfg.proto
+
+help:
+	@echo "	build - Build the application"
+	@echo "	run - Run the application"
+	@echo "	lint - Run linter"

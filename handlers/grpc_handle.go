@@ -23,7 +23,7 @@ func (s *Server) Analyze(ctx context.Context, req *pb.AnalyzeRequest) (*pb.Analy
 	pbProblems := make([]*pb.Problem, len(problems))
 	for i, problem := range problems {
 		pbProblems[i] = &pb.Problem{
-			Filename:       problem.Filename,
+			Filename:       "from GRPC",
 			Path:           problem.Path,
 			Description:    problem.Description,
 			Recommendation: problem.Recommendation,

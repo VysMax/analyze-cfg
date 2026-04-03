@@ -13,20 +13,21 @@ import (
 
 func AnalyseFile(cfg *models.Config) (Problems, error) {
 
-	file, err := os.Open(cfg.Path)
+	file, err := os.Open(cfg.File)
 	if err != nil {
-		return nil, fmt.Errorf("ошибка открытия файла %s: %v\n", cfg.Path, err)
+		return nil, fmt.Errorf("ошибка открытия файла %s: %v", cfg.File, err)
 	}
 	defer file.Close()
 
 	var r io.Reader
 	r = file
+
 	err = SetReader(&r)
 	if err != nil {
-		return nil, fmt.Errorf("ошибка чтения из стандартного ввода: %v\n", err)
+		return nil, fmt.Errorf("ошибка чтения из стандартного ввода: %v", err)
 	}
 
-	format := path.Ext(cfg.Path)
+	format := path.Ext(cfg.File)
 
 	switch format {
 	case ".json":
@@ -34,16 +35,16 @@ func AnalyseFile(cfg *models.Config) (Problems, error) {
 	case ".yaml", ".yml":
 		err = yaml.NewDecoder(r).Decode(&cfg)
 	default:
-		return nil, fmt.Errorf("неподдерживаемый формат:%s\n", format)
+		return nil, fmt.Errorf("неподдерживаемый формат:%s", format)
 	}
 
 	if err != nil && err != io.EOF {
-		return nil, fmt.Errorf("ошибка парсинга конфигурации: %v\n", err)
+		return nil, fmt.Errorf("ошибка парсинга конфигурации: %v", err)
 	}
 
 	var problems Problems
 	if err = problems.AnalyseCfg(cfg); err != nil {
-		return nil, fmt.Errorf("ошибка проверки конфигурации: %v\n", err)
+		return nil, fmt.Errorf("ошибка проверки конфигурации: %v", err)
 	}
 
 	return problems, nil

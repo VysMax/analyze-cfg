@@ -21,7 +21,9 @@ func AnalyseHandler(w http.ResponseWriter, r *http.Request) {
 	}
 
 	var problems analysis.Problems
-	problems.AnalyseCfg(req)
+	if err := problems.AnalyseCfg(req); err != nil {
+		http.Error(w, "Failed to analyse config", http.StatusInternalServerError)
+	}
 
 	w.Header().Set("Content-Type", "application/json")
 	w.WriteHeader(http.StatusOK)

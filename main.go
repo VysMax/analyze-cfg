@@ -2,6 +2,7 @@ package main
 
 import (
 	"context"
+	"errors"
 	"flag"
 	"fmt"
 	"log"
@@ -114,6 +115,11 @@ func main() {
 
 		message = analysis.MessageBuilder("", problems)
 
+		if len(problems) == 0 {
+			fmt.Println(message)
+			os.Exit(0)
+		}
+
 	case false:
 		info, err := os.Stat(flag.Arg(0))
 		if err != nil {
@@ -122,23 +128,38 @@ func main() {
 		}
 
 		if info.IsDir() {
-			multFileProblems, err := analysis.AnalyseDirectory(flag.Arg(0), &cfg)
+			dirName := flag.Arg(0)
+			multFileProblems, err := analysis.AnalyseDirectory(dirName, &cfg)
 			if err != nil {
 				fmt.Fprintf(os.Stderr, "ошибка анализа папки %v\n", err)
 				os.Exit(1)
 			}
 
 			messages := make([]string, 1)
-			messages[0] = fmt.Sprintf("Анализ папки %s:\n", flag.Arg(0))
+			switch dirName {
+			case ".":
+				messages[0] = "Анализ текущей папки:"
+			default:
+				messages[0] = fmt.Sprintf("Анализ папки %s:\n", dirName)
+			}
+
+			if len(multFileProblems) == 0 {
+				fmt.Println(messages[0])
+				fmt.Println("Директория не содержит файлов конфигурации")
+				os.Exit(0)
+			}
 
 			for _, problems = range multFileProblems {
-				message = analysis.MessageBuilder(problems[0].Filename, problems)
-				messages = append(messages, message)
+				if len(problems) > 0 {
+					message = analysis.MessageBuilder(problems[0].Filename, problems)
+					messages = append(messages, message)
+				}
+
 			}
 
 			message = strings.Join(messages, "\n")
 		} else {
-			cfg.Path = flag.Arg(0)
+			cfg.File = flag.Arg(0)
 
 			problems, err = analysis.AnalyseFile(&cfg)
 			if err != nil {
@@ -146,15 +167,21 @@ func main() {
 				os.Exit(1)
 			}
 
-			message = analysis.MessageBuilder(cfg.Path, problems)
+			message = analysis.MessageBuilder(cfg.File, problems)
+
+			if len(problems) == 0 {
+				fmt.Println(message)
+				os.Exit(0)
+			}
 		}
 	}
-
 	fmt.Println(message)
 
 	if *isSilent {
 		os.Exit(0)
 	}
 
+	err = errors.New("потенциально опасные настройки обнаружены")
+	fmt.Fprintf(os.Stderr, "Ошибка: %v\n", err)
 	os.Exit(1)
 }

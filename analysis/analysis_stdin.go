@@ -15,6 +15,7 @@ import (
 func AnalysisStdin(input *os.File, cfg *models.Config) (Problems, error) {
 	var r io.Reader
 	r = input
+
 	err := SetReader(&r)
 	if err != nil {
 		return nil, fmt.Errorf("ошибка чтения из стандартного ввода: %v\n", err)

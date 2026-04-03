@@ -1,7 +1,7 @@
 package models
 
 type Config struct {
-	Path     string `json:"path" yaml:"path"`
+	File     string `json:"path" yaml:"path"`
 	Server   `json:"server" yaml:"server"`
 	Database `json:"database" yaml:"database"`
 	Storage  `json:"storage" yaml:"storage"`

@@ -5,12 +5,12 @@ server:
   tls_verify: true
 
 database:
-  password: ""
+  password: "${DB_PASSWORD}"
 
 storage:
   path: "storage/storage.txt"
   permissions: 0750
-  digest_algorithm: "sha256"
+  digest_algorithm: "SHA-256"
 
 log:
   output: "stdout"
