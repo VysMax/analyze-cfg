@@ -1,4 +1,4 @@
-package grpchandle
+package grpcserver
 
 import (
 	"context"
@@ -28,7 +28,6 @@ func (s *Server) Analyze(ctx context.Context, req *pb.AnalyzeRequest) (*pb.Analy
 	pbProblems := make([]*pb.Problem, len(problems))
 	for i, problem := range problems {
 		pbProblems[i] = &pb.Problem{
-			Filename:       "from GRPC",
 			Path:           problem.Path,
 			Description:    problem.Description,
 			Recommendation: problem.Recommendation,
@@ -44,7 +43,10 @@ func convertFromPb(req *pb.AnalyzeRequest) *models.Config {
 
 	if req.Server != nil {
 		cfg.Server.Host = req.Server.Host
-		cfg.Server.TlsVerify = req.Server.TlsVerify
+		if req.Server.TlsVerify != nil {
+			cfg.Server.TlsVerify = &req.Server.TlsVerify.Value
+		}
+
 	}
 
 	if req.Database != nil {

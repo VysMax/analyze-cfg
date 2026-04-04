@@ -2,6 +2,7 @@ syntax = "proto3";
 
 package analyze;
 
+import "google/protobuf/wrappers.proto";
 
 option go_package = "./proto";
 
@@ -23,7 +24,7 @@ message AnalyzeResponse {
 
 message ServerConfig {
     string host = 1;
-    bool tls_verify = 2;
+    google.protobuf.BoolValue tls_verify = 2;
 }
 
 message DatabaseConfig {
@@ -42,9 +43,8 @@ message LogConfig {
 }
 
 message Problem {
-    string filename = 1;
-    string path = 2;
-    string description = 3;
-    string recommendation = 4;
-    string severity = 5;
+    string path = 1;
+    string description = 2;
+    string recommendation = 3;
+    string severity = 4;
 }

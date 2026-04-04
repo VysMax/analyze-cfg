@@ -80,7 +80,7 @@ func (a *Analyzer) CheckPassword(cfg *models.Config) {
 }
 
 func (a *Analyzer) CheckTLS(cfg *models.Config) {
-	if !cfg.Server.TlsVerify {
+	if cfg.Server.TlsVerify != nil && *cfg.Server.TlsVerify == false {
 		a.problems = append(a.problems, models.Problem{
 			Filename:       cfg.File,
 			Path:           "server.tls_verify",

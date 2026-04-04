@@ -9,6 +9,7 @@ package proto
 import (
 	protoreflect "google.golang.org/protobuf/reflect/protoreflect"
 	protoimpl "google.golang.org/protobuf/runtime/protoimpl"
+	wrapperspb "google.golang.org/protobuf/types/known/wrapperspb"
 	reflect "reflect"
 	sync "sync"
 	unsafe "unsafe"
@@ -136,7 +137,7 @@ func (x *AnalyzeResponse) GetProblems() []*Problem {
 type ServerConfig struct {
 	state         protoimpl.MessageState `protogen:"open.v1"`
 	Host          string                 `protobuf:"bytes,1,opt,name=host,proto3" json:"host,omitempty"`
-	TlsVerify     bool                   `protobuf:"varint,2,opt,name=tls_verify,json=tlsVerify,proto3" json:"tls_verify,omitempty"`
+	TlsVerify     *wrapperspb.BoolValue  `protobuf:"bytes,2,opt,name=tls_verify,json=tlsVerify,proto3" json:"tls_verify,omitempty"`
 	unknownFields protoimpl.UnknownFields
 	sizeCache     protoimpl.SizeCache
 }
@@ -178,11 +179,11 @@ func (x *ServerConfig) GetHost() string {
 	return ""
 }
 
-func (x *ServerConfig) GetTlsVerify() bool {
+func (x *ServerConfig) GetTlsVerify() *wrapperspb.BoolValue {
 	if x != nil {
 		return x.TlsVerify
 	}
-	return false
+	return nil
 }
 
 type DatabaseConfig struct {
@@ -343,11 +344,10 @@ func (x *LogConfig) GetLevel() string {
 
 type Problem struct {
 	state          protoimpl.MessageState `protogen:"open.v1"`
-	Filename       string                 `protobuf:"bytes,1,opt,name=filename,proto3" json:"filename,omitempty"`
-	Path           string                 `protobuf:"bytes,2,opt,name=path,proto3" json:"path,omitempty"`
-	Description    string                 `protobuf:"bytes,3,opt,name=description,proto3" json:"description,omitempty"`
-	Recommendation string                 `protobuf:"bytes,4,opt,name=recommendation,proto3" json:"recommendation,omitempty"`
-	Severity       string                 `protobuf:"bytes,5,opt,name=severity,proto3" json:"severity,omitempty"`
+	Path           string                 `protobuf:"bytes,1,opt,name=path,proto3" json:"path,omitempty"`
+	Description    string                 `protobuf:"bytes,2,opt,name=description,proto3" json:"description,omitempty"`
+	Recommendation string                 `protobuf:"bytes,3,opt,name=recommendation,proto3" json:"recommendation,omitempty"`
+	Severity       string                 `protobuf:"bytes,4,opt,name=severity,proto3" json:"severity,omitempty"`
 	unknownFields  protoimpl.UnknownFields
 	sizeCache      protoimpl.SizeCache
 }
@@ -382,13 +382,6 @@ func (*Problem) Descriptor() ([]byte, []int) {
 	return file_proto_analyze_cfg_proto_rawDescGZIP(), []int{6}
 }
 
-func (x *Problem) GetFilename() string {
-	if x != nil {
-		return x.Filename
-	}
-	return ""
-}
-
 func (x *Problem) GetPath() string {
 	if x != nil {
 		return x.Path
@@ -421,18 +414,18 @@ var File_proto_analyze_cfg_proto protoreflect.FileDescriptor
 
 const file_proto_analyze_cfg_proto_rawDesc = "" +
 	"\n" +
-	"\x17proto/analyze-cfg.proto\x12\aanalyze\"\xcc\x01\n" +
+	"\x17proto/analyze-cfg.proto\x12\aanalyze\x1a\x1egoogle/protobuf/wrappers.proto\"\xcc\x01\n" +
 	"\x0eAnalyzeRequest\x12-\n" +
 	"\x06server\x18\x01 \x01(\v2\x15.analyze.ServerConfigR\x06server\x123\n" +
 	"\bdatabase\x18\x02 \x01(\v2\x17.analyze.DatabaseConfigR\bdatabase\x120\n" +
 	"\astorage\x18\x03 \x01(\v2\x16.analyze.StorageConfigR\astorage\x12$\n" +
 	"\x03log\x18\x04 \x01(\v2\x12.analyze.LogConfigR\x03log\"?\n" +
 	"\x0fAnalyzeResponse\x12,\n" +
-	"\bproblems\x18\x02 \x03(\v2\x10.analyze.ProblemR\bproblems\"A\n" +
+	"\bproblems\x18\x02 \x03(\v2\x10.analyze.ProblemR\bproblems\"]\n" +
 	"\fServerConfig\x12\x12\n" +
-	"\x04host\x18\x01 \x01(\tR\x04host\x12\x1d\n" +
+	"\x04host\x18\x01 \x01(\tR\x04host\x129\n" +
 	"\n" +
-	"tls_verify\x18\x02 \x01(\bR\ttlsVerify\",\n" +
+	"tls_verify\x18\x02 \x01(\v2\x1a.google.protobuf.BoolValueR\ttlsVerify\",\n" +
 	"\x0eDatabaseConfig\x12\x1a\n" +
 	"\bpassword\x18\x01 \x01(\tR\bpassword\"p\n" +
 	"\rStorageConfig\x12\x12\n" +
@@ -441,13 +434,12 @@ const file_proto_analyze_cfg_proto_rawDesc = "" +
 	"\x10digest_algorithm\x18\x03 \x01(\tR\x0fdigestAlgorithm\"9\n" +
 	"\tLogConfig\x12\x16\n" +
 	"\x06output\x18\x01 \x01(\tR\x06output\x12\x14\n" +
-	"\x05level\x18\x02 \x01(\tR\x05level\"\x9f\x01\n" +
-	"\aProblem\x12\x1a\n" +
-	"\bfilename\x18\x01 \x01(\tR\bfilename\x12\x12\n" +
-	"\x04path\x18\x02 \x01(\tR\x04path\x12 \n" +
-	"\vdescription\x18\x03 \x01(\tR\vdescription\x12&\n" +
-	"\x0erecommendation\x18\x04 \x01(\tR\x0erecommendation\x12\x1a\n" +
-	"\bseverity\x18\x05 \x01(\tR\bseverity2K\n" +
+	"\x05level\x18\x02 \x01(\tR\x05level\"\x83\x01\n" +
+	"\aProblem\x12\x12\n" +
+	"\x04path\x18\x01 \x01(\tR\x04path\x12 \n" +
+	"\vdescription\x18\x02 \x01(\tR\vdescription\x12&\n" +
+	"\x0erecommendation\x18\x03 \x01(\tR\x0erecommendation\x12\x1a\n" +
+	"\bseverity\x18\x04 \x01(\tR\bseverity2K\n" +
 	"\vCfgAnalyzer\x12<\n" +
 	"\aAnalyze\x12\x17.analyze.AnalyzeRequest\x1a\x18.analyze.AnalyzeResponseB\tZ\a./protob\x06proto3"
 
@@ -465,13 +457,14 @@ func file_proto_analyze_cfg_proto_rawDescGZIP() []byte {
 
 var file_proto_analyze_cfg_proto_msgTypes = make([]protoimpl.MessageInfo, 7)
 var file_proto_analyze_cfg_proto_goTypes = []any{
-	(*AnalyzeRequest)(nil),  // 0: analyze.AnalyzeRequest
-	(*AnalyzeResponse)(nil), // 1: analyze.AnalyzeResponse
-	(*ServerConfig)(nil),    // 2: analyze.ServerConfig
-	(*DatabaseConfig)(nil),  // 3: analyze.DatabaseConfig
-	(*StorageConfig)(nil),   // 4: analyze.StorageConfig
-	(*LogConfig)(nil),       // 5: analyze.LogConfig
-	(*Problem)(nil),         // 6: analyze.Problem
+	(*AnalyzeRequest)(nil),       // 0: analyze.AnalyzeRequest
+	(*AnalyzeResponse)(nil),      // 1: analyze.AnalyzeResponse
+	(*ServerConfig)(nil),         // 2: analyze.ServerConfig
+	(*DatabaseConfig)(nil),       // 3: analyze.DatabaseConfig
+	(*StorageConfig)(nil),        // 4: analyze.StorageConfig
+	(*LogConfig)(nil),            // 5: analyze.LogConfig
+	(*Problem)(nil),              // 6: analyze.Problem
+	(*wrapperspb.BoolValue)(nil), // 7: google.protobuf.BoolValue
 }
 var file_proto_analyze_cfg_proto_depIdxs = []int32{
 	2, // 0: analyze.AnalyzeRequest.server:type_name -> analyze.ServerConfig
@@ -479,13 +472,14 @@ var file_proto_analyze_cfg_proto_depIdxs = []int32{
 	4, // 2: analyze.AnalyzeRequest.storage:type_name -> analyze.StorageConfig
 	5, // 3: analyze.AnalyzeRequest.log:type_name -> analyze.LogConfig
 	6, // 4: analyze.AnalyzeResponse.problems:type_name -> analyze.Problem
-	0, // 5: analyze.CfgAnalyzer.Analyze:input_type -> analyze.AnalyzeRequest
-	1, // 6: analyze.CfgAnalyzer.Analyze:output_type -> analyze.AnalyzeResponse
-	6, // [6:7] is the sub-list for method output_type
-	5, // [5:6] is the sub-list for method input_type
-	5, // [5:5] is the sub-list for extension type_name
-	5, // [5:5] is the sub-list for extension extendee
-	0, // [0:5] is the sub-list for field type_name
+	7, // 5: analyze.ServerConfig.tls_verify:type_name -> google.protobuf.BoolValue
+	0, // 6: analyze.CfgAnalyzer.Analyze:input_type -> analyze.AnalyzeRequest
+	1, // 7: analyze.CfgAnalyzer.Analyze:output_type -> analyze.AnalyzeResponse
+	7, // [7:8] is the sub-list for method output_type
+	6, // [6:7] is the sub-list for method input_type
+	6, // [6:6] is the sub-list for extension type_name
+	6, // [6:6] is the sub-list for extension extendee
+	0, // [0:6] is the sub-list for field type_name
 }
 
 func init() { file_proto_analyze_cfg_proto_init() }

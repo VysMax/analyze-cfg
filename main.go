@@ -16,9 +16,9 @@ import (
 
 	"github.com/VysMax/analyze-cfg/analysis"
 	pb "github.com/VysMax/analyze-cfg/gen/proto"
-	grpchandle "github.com/VysMax/analyze-cfg/grpc"
+	grpcserver "github.com/VysMax/analyze-cfg/grpc"
 	"github.com/VysMax/analyze-cfg/models"
-	rest "github.com/VysMax/analyze-cfg/rest"
+	restserver "github.com/VysMax/analyze-cfg/rest"
 	"github.com/VysMax/analyze-cfg/usecase"
 	"github.com/joho/godotenv"
 	"google.golang.org/grpc"
@@ -42,7 +42,7 @@ func main() {
 	if *apiMode {
 		analyzer := analysis.NewAnalyzer()
 		usecase := usecase.New(analyzer)
-		handler := rest.NewHandler(usecase)
+		handler := restserver.NewHandler(usecase)
 
 		http.HandleFunc("/analyze", handler.Analyze)
 
@@ -79,7 +79,7 @@ func main() {
 	if *grpcMode {
 		analyzer := analysis.NewAnalyzer()
 		usecase := usecase.New(analyzer)
-		handler := grpchandle.NewHandler(usecase)
+		handler := grpcserver.NewHandler(usecase)
 
 		lis, err := net.Listen("tcp", os.Getenv("PORT"))
 		if err != nil {

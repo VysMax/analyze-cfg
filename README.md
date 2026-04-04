@@ -133,8 +133,7 @@ curl -X POST http://localhost:8080/analyze \
 ```
 
 ```
-grpcurl -plaintext -d '{"server":{"host": "0.0.0.0","tls_verify":false}, "log": {"output":"stdout", "level":"debug"}}' localhost:8080 analyze.CfgAnalyze
-r/AnalyzeGRPC
+grpcurl -plaintext -d '{"server":{"host": "0.0.0.0"}, "log": {"output":"stdout", "level":"debug"}}' localhost:8080 analyze.CfgAnalyzer/Analyze
 ```
 
 *Вывод*
@@ -142,21 +141,12 @@ r/AnalyzeGRPC
 {
   "problems": [
     {
-      "filename": "from GRPC",
       "path": "server.host",
       "description": "Сервер слушает на всех хостах (0.0.0.0).",
       "recommendation": "Ограничьте доступ. Для локального доступа используйте 127.0.0.1 .",
       "severity": "HIGH"
     },
     {
-      "filename": "from GRPC",
-      "path": "server.tls_verify",
-      "description": "TLS проверка выключена.",
-      "recommendation": "Включите TLS-проверку.",
-      "severity": "HIGH"
-    },
-    {
-      "filename": "from GRPC",
       "path": "log.level",
       "description": "логирование в debug-режиме.",
       "recommendation": "Поменяйте режим на более избирательный (info+).",
